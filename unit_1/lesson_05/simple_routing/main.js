@@ -1,3 +1,5 @@
+// Enables Strict Mode — helps catch common JavaScript errors,  
+// enforces cleaner syntax, and prevents the use of undeclared variables.
 "use strict";
 
 // Define an object (a simple route map) that links specific URL paths to HTML responses
