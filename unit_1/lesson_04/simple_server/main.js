@@ -1,3 +1,5 @@
+// Enables Strict Mode — helps catch common JavaScript errors,  
+// enforces cleaner syntax, and prevents the use of undeclared variables.
 "use strict";
 
 // Define the port number where the server will listen for incoming requests

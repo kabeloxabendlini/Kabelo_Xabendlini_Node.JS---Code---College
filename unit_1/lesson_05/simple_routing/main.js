@@ -1,3 +1,5 @@
+"use strict";
+
 // Define an object (a simple route map) that links specific URL paths to HTML responses
 // Each key is a URL route, and each value is the HTML content to send back
 const routeResponseMap = {
