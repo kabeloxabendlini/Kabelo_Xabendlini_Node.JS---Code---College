@@ -54,7 +54,7 @@ app.on("request", (req, res) => {
     });
 
     // Define the HTML message that will be sent to the browser
-    let responseMessage = "<h1>This will show on the screen.</h1>";
+    let responseMessage = "<h1>This will show on the screen.This is the server command!</h1>";
 
     // End the response and send the message to the client
     res.end(responseMessage);
