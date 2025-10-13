@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "http-status-codes": "^2.3.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   }
 }
