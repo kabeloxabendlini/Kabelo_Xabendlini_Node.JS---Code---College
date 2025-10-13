@@ -1,61 +1,105 @@
-@import url("https://fonts.googleapis.com/css?family=Baloo+Bhaina");
+/* Import custom font */
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Bhaina&display=swap");
 
-body {
+/* Global Styles */
+* {
+  box-sizing: border-box; /* Better control of sizing */
   margin: 0;
-  padding-top: 150px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #625a56;
+  padding: 0;
 }
 
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #625a56;
+  line-height: 1.6;
+  background-color: #f9f9f9; /* subtle background color for depth */
+  padding-top: 150px; /* space for fixed nav */
+}
+
+/* Navigation */
 #nav {
   width: 100%;
   height: 110px;
-  padding: 20px 0 5px 0;
-  border-bottom: solid 8px #ee3114;
-  box-shadow: 10px 10px 10px #ccc;
-  position: absolute;
+  padding: 20px 0 5px;
+  border-bottom: 8px solid #ee3114;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: fixed; /* change to fixed for sticky nav */
   top: 0;
-}
-
-#title {
-  color: #625a56;
-  margin: 0;
-  font-family: "Baloo Bhaina";
-  text-transform: uppercase;
-}
-
-img {
-  width: 100%;
-}
-
-a {
-  color: #333;
-  text-decoration: none;
+  background-color: #fff; /* keep nav background solid */
+  z-index: 1000;
 }
 
 #nav a {
   text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+#nav a:hover {
+  color: #ed4a0f;
+}
+
+#title {
+  font-family: "Baloo Bhaina", cursive;
+  color: #625a56;
+  text-transform: uppercase;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+/* Layout */
+.container {
+  padding: 0 10%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .nav-align {
   text-align: center;
-  padding: 3px 0;
+  padding: 5px 0;
 }
 
-.container {
-  padding: 0% 10%;
+/* Images */
+img {
+  width: 100%;
+  display: block;
+  border-radius: 6px; /* subtle rounded corners */
 }
 
+/* Buttons */
 .button {
   background-color: #ed4a0f;
-  padding: 0.3vw 3vw;
-  border-radius: 2px;
+  color: #fff;
+  padding: 0.5em 2em; /* more consistent sizing */
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   display: inline-block;
-  color: #fff;
+  font-weight: bold;
+  font-size: 1,5rem;
+  transition: all 0.3s ease;
 }
 
 .button:hover {
   background-color: #ffb99f;
   color: #ed4a0f;
+  transform: translateY(-2px); /* subtle hover lift effect */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #title {
+    font-size: 1.8rem;
+  }
+
+  .container {
+    padding: 0 5%;
+  }
+
+  .button {
+    width: 100%;
+    text-align: center;
+  }
 }
