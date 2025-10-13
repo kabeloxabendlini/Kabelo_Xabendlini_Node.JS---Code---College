@@ -24,7 +24,7 @@ const app = http.createServer((request, response) => {
     });
 
     // Define the message that will be sent back to the browser
-    let responseMessage = "<h1>Hello please update Node.JS!</h1>";
+    let responseMessage = "<h1>Hello please update my Node.JS! file</h1>";
 
     // Write the response message to the client
     response.write(responseMessage);
