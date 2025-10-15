@@ -10,8 +10,8 @@
   "devDependencies": {
     "http-status-codes": "^2.3.0"
   },
-  "description": "",
   "dependencies": {
     "express": "^5.1.0"
-  }
+  },
+  "description": ""
 }
