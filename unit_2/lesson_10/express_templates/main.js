@@ -1,9 +1,10 @@
 // main.js
 
 // ============================================================
-// This is the main entry point of the application.
-// It sets up an Express.js web server that uses the EJS
-// templating engine and modular controllers for route handling.
+// Main entry point of the application.
+// Sets up an Express.js web server that uses the EJS
+// templating engine, express-ejs-layouts for page layouts,
+// and modular controllers for route handling.
 // ============================================================
 
 
@@ -11,58 +12,32 @@
 // Import Required Modules
 // ------------------------------------------------------------
 
-// Import the Express framework (used for building the web server)
-const express = require("express");
-
-// Create an instance of an Express application
-const app = express();
-
-// Import the controller file that contains route-handling logic
-const homeController = require("./controllers/homeController");
-
-// Import the express-ejs-layouts module for template layout support
-// It helps manage shared page structures (like headers and footers)
-const layouts = require("express-ejs-layouts");
+const express = require("express");             // Express framework for web server
+const app = express();                           // Create Express app instance
+const homeController = require("./controllers/homeController"); // Controller with route logic
+const layouts = require("express-ejs-layouts");  // EJS layout support for consistent page structure
 
 
 // ------------------------------------------------------------
 // App Configuration
 // ------------------------------------------------------------
 
-// Define the port number the server will listen on.
-// If an environment variable PORT is defined (e.g., by a hosting service),
-// use that value. Otherwise, default to port 3000.
-app.set("port", process.env.PORT || 3000);
-
-// Set the view engine to EJS (Embedded JavaScript Templates).
-// This allows rendering of dynamic HTML pages using .ejs templates.
-app.set("view engine", "ejs");
+app.set("port", process.env.PORT || 3000);      // Port number (defaults to 3000 if none specified)
+app.set("view engine", "ejs");                  // Set view engine to EJS for rendering templates
 
 
 // ------------------------------------------------------------
 // Middleware Setup
 // ------------------------------------------------------------
 
-// Enable EJS layouts so pages can share a common structure (layout.ejs).
-app.use(layouts);
+app.use(layouts);                               // Enable EJS layouts
+app.use(express.urlencoded({ extended: false })); // Parse URL-encoded data (HTML forms)
+app.use(express.json());                         // Parse JSON data in requests
 
-// Enable parsing of URL-encoded data (such as from HTML form submissions).
-// Setting 'extended: false' uses the simpler querystring library.
-app.use(
-  express.urlencoded({
-    extended: false
-  })
-);
-
-// Enable parsing of incoming JSON request bodies.
-// Useful when working with APIs or JavaScript-based frontends.
-app.use(express.json());
-
-// Custom middleware that logs every request made to the server.
-// Helps with debugging and understanding server traffic.
+// Log every request to the console
 app.use((req, res, next) => {
   console.log(`Request made to: ${req.url}`);
-  next(); // Pass control to the next middleware or route handler
+  next(); // Continue to next middleware or route
 });
 
 
@@ -70,19 +45,27 @@ app.use((req, res, next) => {
 // Routes Setup
 // ------------------------------------------------------------
 
-// Route 1: Handles GET requests with a dynamic URL parameter (vegetable name)
-// Example: http://localhost:3000/items/carrot
-// This route calls the sendReqParam() function from homeController.
+// Root route (GET /)
+// Renders the home page using EJS
+app.get("/", (req, res) => {
+  res.render("index", {
+    title: "Home Page",
+    firstName: "Kabelo"  // <-- pass firstName here
+  });
+});
+
+// Route with dynamic URL parameter (vegetable)
+// Example: GET /items/carrot
+// Handled by homeController.sendReqParam
 app.get("/items/:vegetable", homeController.sendReqParam);
 
-// Route 2: Handles POST requests to the root URL ("/")
-// Typically triggered by submitting a form or API POST request.
-// The logic for this route is defined in homeController.sendPost().
+// Route for POST requests to root URL (/)
+// Handled by homeController.sendPost
 app.post("/", homeController.sendPost);
 
-// Route 3: Handles GET requests with a name parameter
-// Example: http://localhost:3000/name/Kabelo
-// This calls homeController.respondWithName() to generate a response.
+// Route with dynamic URL parameter (name)
+// Example: GET /name/Kabelo
+// Handled by homeController.respondWithName
 app.get("/name/:myName", homeController.respondWithName);
 
 
@@ -90,8 +73,6 @@ app.get("/name/:myName", homeController.respondWithName);
 // Start the Server
 // ------------------------------------------------------------
 
-// The app listens on the configured port and logs a confirmation message
-// once the server is up and running.
 app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });

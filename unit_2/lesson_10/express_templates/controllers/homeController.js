@@ -1,16 +1,17 @@
+// controllers/homeController.js
+
 exports.sendReqParam = (req, res) => {
-    let veg = req.params.vegetable;
-    res.send(`This is the page for ${veg}`);
+  const veg = req.params.vegetable;
+  res.send(`This page is for ${veg}`);
 };
 
 exports.sendPost = (req, res) => {
-    console.log(req.body);
-    console.log(req.query);
-    res.send("POST Successful!");
+  console.log("Body:", req.body);
+  console.log("Query:", req.query);
+  res.send("POST Successful!");
 };
 
 exports.respondWithName = (req, res) => {
-    // let paramsName = req.params.myName;
-    // res.render("index", {name: paramsName});
-    res.render("index", {firstName: req.params.myName});
+  const name = req.params.myName;
+  res.send(`Hello, ${name}!`);
 };
