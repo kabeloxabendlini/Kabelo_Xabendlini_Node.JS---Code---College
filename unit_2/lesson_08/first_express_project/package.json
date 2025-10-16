@@ -7,12 +7,12 @@
   },
   "author": "Kabelo Xabendlini",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "http-status-codes": "^2.3.0"
   },
   "dependencies": {
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
-  }
+  },
+  "description": ""
 }
