@@ -1,0 +1,22 @@
+<div class="courses-section container">
+  <!-- Left Column: Image -->
+  <div class="courses-image">
+    <img src="images/fruit.jpg" alt="Fresh Ingredients">
+  </div>
+
+  <!-- Right Column: Courses -->
+  <div class="courses-content">
+    <h1 class="title">Learn to Cook Cutting Edge Food</h1>
+    <h2>Our Courses</h2>
+
+    <!-- Dynamic courses list -->
+    <div class="courses-list">
+      <% offeredCourses.forEach(course => { %>
+        <div class="course-card">
+          <h3><%= course.title %></h3>
+          <p class="course-price">$<%= course.cost %></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>

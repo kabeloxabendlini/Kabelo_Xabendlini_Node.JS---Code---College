@@ -1,0 +1,43 @@
+<div class="contact-section container">
+  <!-- Left Column: Image -->
+  <div class="contact-image">
+    <img src="images/graph.png" alt="Graph illustration">
+  </div>
+
+  <!-- Right Column: Contact Form -->
+  <div class="contact-form">
+    <h1>Reach Out to Us!</h1>
+    <p>Enter your details below if you're interested to learn more:</p>
+
+    <form action="/contact" method="post">
+      <!-- Name Input -->
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input 
+          type="text" 
+          name="name" 
+          id="name" 
+          placeholder="Your Name" 
+          required
+        >
+      </div>
+
+      <!-- Email Input -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          name="email" 
+          id="email" 
+          placeholder="Your Email" 
+          required
+        >
+      </div>
+
+      <!-- Submit Button -->
+      <button class="button" type="submit">Submit</button>
+    </form>
+
+    <p class="confirmation-text">We'll get back to you soon!</p>
+  </div>
+</div>

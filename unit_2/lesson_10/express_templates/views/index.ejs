@@ -1,2 +1,20 @@
-<% let name = firstName; %>
-<h1> Hello, <%= firstName %> </h1>
+<%# let name = "Kabelo"; %>
+<!-- 
+  This line is an EJS *comment*.
+  - The <%# ... %> syntax is used for comments that are ignored by both
+    the server and the client (they won't appear in the rendered HTML).
+  - In this example, you're showing how you could define a variable called "name"
+    with the value "Kabelo", but since it's commented out, it won’t execute.
+-->
+
+<h1>Hello, <%= name %></h1>
+<!-- 
+  The <%= ... %> tag outputs the value of a variable directly into the HTML.
+  - Here, it inserts the value of "name" dynamically.
+  - For example, if the server sends { name: "Kabelo" },
+    the rendered HTML will display:
+        <h1>Hello, Kabelo</h1>
+  - This works because your Express controller passes "name" to this EJS view,
+    for example:
+        res.render("index", { name: paramsName });
+-->

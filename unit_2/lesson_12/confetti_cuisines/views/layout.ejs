@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confetti Cuisine</title>
+  <link rel="shortcut icon" type="image/png" href="/images/icon.png" />
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/confetti_cuisine.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header id="nav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h1 id="title">Confetti Cuisine</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="/"><span class="button">Home</span></a>
+        <a href="/courses"><span class="button">Courses</span></a>
+        <a href="/contact"><span class="button">Contact</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main content injected from routes -->
+  <main>
+    <%- body %>
+  </main>
+</body>
+
+</html>

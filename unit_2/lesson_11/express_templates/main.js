@@ -13,7 +13,10 @@ app.use(
     extended: false
   })
 );
+
 app.use(express.json());
+app.use(express.static("public"));
+app.use(layouts);
 
 app.use((req, res, next) => {
   console.log(`request made to: ${req.url}`);

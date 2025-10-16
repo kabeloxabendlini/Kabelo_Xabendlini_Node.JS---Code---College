@@ -1,54 +1,87 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- 
+      The meta viewport tag controls how the page is displayed on mobile devices.
+      - width=device-width: sets the width of the page to the device's screen width.
+      - initial-scale=0.8: zooms out slightly on load.
+      - maximum-scale=1: prevents zooming in beyond the normal scale.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.8, maximum-scale=1"
+    />
 
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1">
-	<title>Recipe App</title>
-	<style media="screen">
-		body {
-			margin: 0;
-			padding: 0;
-			height: 100%;
-			color: black;
-			text-align: center;
-			font-family: sans-serif;
-		}
+    <!-- Title shown in the browser tab -->
+    <title>Recipe App</title>
 
-		#nav {
-			background-color: #7D498D;
-		}
+    <!-- Internal CSS styling for the layout -->
+    <style media="screen">
+      /* Reset default browser spacing and set base text styling */
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        color: black;
+        text-align: center;
+        font-family: sans-serif;
+      }
 
-		#footer {
-			background-color: #9C73A9;
-			position: relative;
-			bottom: 0;
-		}
+      /* Navigation bar styling */
+      #nav {
+        background-color: #7d498d;
+      }
 
-		#container {
-			height: 100px;
-			padding-top: 40px;
-		}
+      /* Footer styling */
+      #footer {
+        background-color: #9c73a9;
+        position: relative;
+        bottom: 0;
+      }
 
-		.block {
-			padding-top: 40px;
-			width: 100%;
-			text-align: center;
-			height: 60px;
-			border: black dashed 5px;
-		}
-	</style>
-</head>
+      /* Container area for dynamic page content */
+      #container {
+        height: 100px;
+        padding-top: 40px;
+      }
 
-<body>
+      /* Generic block style applied to nav and footer sections */
+      .block {
+        padding-top: 40px;
+        width: 100%;
+        text-align: center;
+        height: 60px;
+        border: black dashed 5px;
+      }
+    </style>
+  </head>
 
-	<% include partials/navigation %>
-	<div id="container">
-		<%- body %>
-	</div>
-	<div id="footer" class="block">FOOTER</div>
+  <body>
+    <!-- 
+      The navigation bar at the top of the page.
+      The line below is commented out because navigation is included using a partial instead.
+    -->
+    <!-- <div id="nav" class="block">NAVIGATION</div> -->
 
+    <!-- 
+      Include the navigation partial file dynamically.
+      - The <%- ... %> tag outputs raw HTML (not escaped), allowing EJS partials to render properly.
+      - The file "partials/navigation.ejs" should contain your navigation bar HTML.
+    -->
+    <%- include('partials/navigation') %>
 
-</body>
+    <!-- 
+      The main content area where each page’s body will be injected.
+      - <%- body %> is provided by express-ejs-layouts.
+      - It’s replaced by the content of the individual EJS view being rendered.
+    -->
+    <div id="container"><%- body %></div>
 
+    <!-- 
+      Footer section displayed at the bottom of every page.
+      - Uses the "block" class for consistent styling with the navigation.
+    -->
+    <div id="footer" class="block">FOOTER</div>
+  </body>
 </html>

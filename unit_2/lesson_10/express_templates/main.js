@@ -1,87 +1,66 @@
-// Import the Express framework
-// Express is a Node.js framework that simplifies building web servers
+// Enable strict mode for cleaner, more secure JavaScript
+// Helps prevent common coding mistakes (e.g., using undeclared variables)
+"use strict";
+
+// Import the Express framework, which simplifies creating web servers in Node.js
 const express = require("express");
 
-// Create an instance of the Express application
-// The `app` object allows you to configure routes, middleware, and settings
+// Create an instance of an Express application
 const app = express();
 
-// Import the controller module that contains the logic for handling routes
+// Import your controller that handles routes and responses
 const homeController = require("./controllers/homeController");
 
-// Import express-ejs-layouts to manage layout templates for EJS
-// This allows consistent page headers, footers, and layout structure
+// Import express-ejs-layouts to enable layout support in EJS templates
 const layouts = require("express-ejs-layouts");
 
+// ----- Application Configuration ----- //
 
-// ------------------------------------------------------------
-// App Configuration
-// ------------------------------------------------------------
-
-// Set the port number the server will listen on
-// Use the PORT environment variable if available, otherwise default to 3000
+// Set the server port (use an environment variable if available, otherwise 3000)
 app.set("port", process.env.PORT || 3000);
 
-// Set EJS as the templating engine
-// This allows rendering dynamic HTML using .ejs files
+// Set EJS (Embedded JavaScript) as the templating engine
+// This allows you to use .ejs files for dynamic HTML rendering
 app.set("view engine", "ejs");
 
+// (Optional) If your views are in a custom folder, you can specify it like this:
+// app.set("views", "./views");
 
-// ------------------------------------------------------------
-// Middleware Setup
-// ------------------------------------------------------------
+// ----- Middleware Setup ----- //
 
-// Enable EJS layouts for shared template structure
-app.use(layouts);
+// Middleware to parse incoming form data (from POST requests)
+// `extended: false` uses the querystring library to parse URL-encoded data
+app.use(
+  express.urlencoded({
+    extended: false,
+  })
+);
 
-// Parse URL-encoded data (from forms)
-// 'extended: false' means using the default querystring library
-app.use(express.urlencoded({ extended: false }));
-
-// Parse JSON request bodies
-// Useful for handling POST requests that send JSON
+// Middleware to parse incoming JSON data (from APIs or AJAX requests)
 app.use(express.json());
 
-// Custom middleware to log every request URL
-// Helps with debugging and monitoring incoming requests
-app.use((req, res, next) => {
-  console.log(`Request made to: ${req.url}`);
-  next(); // Pass control to the next middleware or route handler
-});
+// Enable the use of EJS layout templates across all rendered views
+app.use(layouts);
 
+// ----- Route Definitions ----- //
 
-// ------------------------------------------------------------
-// Routes
-// ------------------------------------------------------------
-
-// Root route (GET /)
-// This handles requests to the home page and sends a welcome message
-app.get("/", (req, res) => {
-  res.send("Welcome to the Home Page!");
-});
-
-// Dynamic route for vegetables (GET /items/:vegetable)
-// Example: /items/carrot
-// The logic for handling this route is in homeController.sendReqParam
-app.get("/items/:vegetable", homeController.sendReqParam);
-
-// POST route for root (POST /)
-// Handles form submissions or API requests
-// Logic is in homeController.sendPost
-app.post("/", homeController.sendPost);
-
-// Dynamic route for names (GET /name/:myName)
-// Example: /name/Kabelo
-// The logic is handled by homeController.respondWithName
+// Route that responds to GET requests with a name parameter in the URL
+// Example: visiting /name/Kabelo will render a page that says "Hello, Kabelo"
 app.get("/name/:myName", homeController.respondWithName);
 
+// You could also define a static route (currently commented out)
+// app.get("/name", homeController.respondWithName);
 
-// ------------------------------------------------------------
-// Start Server
-// ------------------------------------------------------------
+// ----- Start the Server ----- //
 
-// Start the server and listen on the configured port
-// Logs a message to confirm the server is running
-app.listen(app.get("port"), () => {
-  console.log(`Server running at http://localhost:${app.get("port")}`);
-});
+// Start the server and listen on the specified port
+// The callback logs a confirmation message when the server is running
+app
+  .listen(app.get("port"), () => {
+    console.log(`Server is running on port number: ${app.get("port")}`);
+  })
+
+  // Handle startup errors gracefully (e.g., if the port is already in use)
+  .on("error", (err) => {
+    console.error("Server failed to start:", err);
+  });

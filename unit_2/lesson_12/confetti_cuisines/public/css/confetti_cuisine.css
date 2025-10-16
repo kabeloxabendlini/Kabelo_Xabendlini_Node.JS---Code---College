@@ -1,0 +1,742 @@
+/* Import a fun, friendly font for headings */
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Bhaina&display=swap");
+
+/* ---------- Base Styles ---------- */
+body {
+  margin: 0;
+  padding-top: 150px; /* Keep space for fixed nav */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #3e3a39; /* Softer, modern text color */
+  background-color: #f9f7f6; /* Light, neutral background */
+  line-height: 1.6;
+}
+
+/* ---------- Navigation ---------- */
+#nav {
+  width: 100%;
+  height: 110px;
+  padding: 20px 0 5px 0;
+  border-bottom: 6px solid #ee3114; /* bold, elegant underline */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* subtle, modern shadow */
+  position: fixed; /* fix nav at top */
+  top: 0;
+  left: 0;
+  background-color: #fff; /* clean, bright nav */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+/* Navigation links */
+#nav a {
+  text-decoration: none;
+  color: #3e3a39;
+  font-weight: 600;
+  padding: 0 1rem;
+  transition: all 0.3s ease;
+}
+
+#nav a:hover {
+  color: #ed4a0f;
+  text-shadow: 0 0 2px #ed4a0f;
+}
+
+/* ---------- Title ---------- */
+#title {
+  color: #625a56;
+  margin: 0;
+  font-family: "Baloo Bhaina", cursive;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 2.5rem;
+}
+
+/* ---------- Containers ---------- */
+.container {
+  padding: 2% 10%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ---------- Images ---------- */
+img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Buttons ---------- */
+.button {
+  background-color: #ed4a0f;
+  padding: 0.5rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+  background-color: #ffb99f;
+  color: #ed4a0f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Navigation alignment ---------- */
+.nav-align {
+  text-align: center;
+  padding: 5px 0;
+}
+
+/* ---------- Footer ---------- */
+#footer {
+  background-color: #9c73a9;
+  color: #fff;
+  padding: 2rem 0;
+  text-align: center;
+  margin-top: 2rem;
+  border-top: 4px solid #ee3114;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  #nav {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem 0;
+  }
+
+  #title {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 5% 5%;
+  }
+
+  .button {
+    width: 80%;
+    padding: 0.8rem 0;
+  }
+}
+
+/* css for my contact section. */
+
+/* Container for the contact section */
+.contact-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3rem;
+  padding: 3% 10%;
+  max-width: 1200px;
+  margin: auto;
+  background-color: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
+}
+
+/* Left Column: Image */
+.contact-image {
+  flex: 1 1 400px;
+}
+
+.contact-image img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Right Column: Form */
+.contact-form {
+  flex: 1 1 400px;
+  text-align: left;
+}
+
+.contact-form h1 {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 2.5rem; /* increased from 2.2rem */
+  color: #625a56;
+  margin-bottom: 0.8rem;
+}
+
+.contact-form p {
+  font-size: 1.2rem; /* increased from 1rem */
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+/* Form Inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem; /* increased label text */
+}
+
+.form-group input {
+  padding: 0.7rem 1rem; /* slightly bigger input area */
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  font-size: 1.1rem; /* bigger input text */
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #ed4a0f;
+  outline: none;
+  box-shadow: 0 0 8px rgba(237, 74, 15, 0.3);
+}
+
+/* Submit Button */
+.button {
+  background-color: #ed4a0f;
+  color: #fff;
+  padding: 0.8rem 2.5rem; /* slightly bigger button */
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 1.2rem; /* bigger button text */
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: #ffb99f;
+  color: #ed4a0f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Confirmation Text */
+.confirmation-text {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #555;
+  font-size: 1.15rem; /* bigger confirmation text */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .contact-section {
+    flex-direction: column;
+    padding: 5% 5%;
+  }
+
+  .contact-form {
+    width: 100%;
+  }
+
+  .contact-image {
+    width: 100%;
+  }
+
+  .contact-form h1 {
+    font-size: 2rem; /* slightly smaller for mobile */
+  }
+
+  .contact-form p {
+    font-size: 1.1rem;
+  }
+
+  .form-group label,
+  .form-group input,
+  .button,
+  .confirmation-text {
+    font-size: 1rem;
+  }
+}
+
+/* css for my contact section. */
+
+/* Container for Courses Section */
+.courses-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  align-items: flex-start;
+  padding: 3% 10%;
+  max-width: 1200px;
+  margin: auto;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Left Column: Image */
+.courses-image {
+  flex: 1 1 400px;
+}
+
+.courses-image img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.courses-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Right Column: Courses Content */
+.courses-content {
+  flex: 1 1 400px;
+  text-align: left;
+}
+
+/* Section Titles */
+.courses-content .title {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 2rem;
+  color: #625a56;
+  margin-bottom: 0.5rem;
+}
+
+.courses-content h2 {
+  font-size: 1.8rem;
+  color: #3e3a39;
+  margin-bottom: 1.5rem;
+}
+
+/* Courses List */
+.courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Individual Course Card */
+.course-card {
+  background-color: #fdf6f0;
+  border-left: 5px solid #ed4a0f;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.course-card h3 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.2rem;
+  color: #625a56;
+}
+
+.course-card .course-price {
+  font-weight: bold;
+  color: #ed4a0f;
+  font-size: 1rem;
+}
+
+/* Hover Effect for Cards */
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .courses-section {
+    flex-direction: column;
+    padding: 5% 5%;
+  }
+
+  .courses-image,
+  .courses-content {
+    width: 100%;
+  }
+}
+
+/* css for my courses */
+
+/* css for error code */
+
+/* Container for Error Section */
+.error-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3rem;
+  padding: 4% 10%;
+  max-width: 1000px;
+  margin: auto;
+  background-color: #fff7f3;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Left Column: Image */
+.error-image {
+  flex: 1 1 300px;
+}
+
+.error-image img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.error-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Right Column: Error Message */
+.error-content {
+  flex: 1 1 400px;
+}
+
+.error-content h1 {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 1.8rem;
+  color: #d9534f;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.error-content p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Home link styling */
+.home-link {
+  color: #ed4a0f;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+  color: #ffb99f;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error-section {
+    flex-direction: column;
+    padding: 5% 5%;
+  }
+
+  .error-image,
+  .error-content {
+    width: 100%;
+  }
+
+  .error-content h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* css for error code */
+
+/* css for index code */
+
+/* Container for Welcome Section */
+.welcome-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3rem;
+  padding: 4% 10%;
+  max-width: 1200px;
+  margin: auto;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+/* Left Column: Image */
+.welcome-image {
+  flex: 1 1 400px;
+}
+
+.welcome-image img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.welcome-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Right Column: Welcome Content */
+.welcome-content {
+  flex: 1 1 400px;
+}
+
+/* Section Titles */
+.welcome-content h1 {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 2.5rem; /* increased from 2rem */
+  color: #625a56;
+  margin-bottom: 0.8rem;
+}
+
+/* Paragraph Text */
+.welcome-content p {
+  font-size: 1.2rem; /* increased from 1rem */
+  color: #555;
+  line-height: 1.8; /* slightly larger for readability */
+  margin-bottom: 1.2rem;
+}
+
+/* Links */
+.link {
+  color: #ed4a0f;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.25rem; /* bigger links */
+  transition: all 0.3s ease;
+}
+
+.link:hover {
+  color: #ffb99f;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .welcome-section {
+    flex-direction: column;
+    padding: 5% 5%;
+    text-align: center;
+  }
+
+  .welcome-image,
+  .welcome-content {
+    width: 100%;
+  }
+
+  .welcome-content h1 {
+    font-size: 2rem; /* slightly smaller for mobile */
+  }
+
+  .welcome-content p {
+    font-size: 1.1rem; /* slightly smaller for mobile */
+  }
+
+  .link {
+    font-size: 1.15rem;
+  }
+}
+
+/* css for index code */
+
+/* css for layout css code */
+
+/* ---------- Base Styles ---------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #faf7f6;
+  color: #3e3a39;
+  line-height: 1.6;
+}
+
+/* ---------- Navigation ---------- */
+#nav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 1rem 5%;
+}
+
+.nav-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand h1 {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 2.5rem;
+  color: #625a56;
+  margin: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.nav-links .button {
+  background-color: #ed4a0f;
+  color: #fff;
+  padding: 0.6rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.nav-links .button:hover {
+  background-color: #ffb99f;
+  color: #ed4a0f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Main Content ---------- */
+main {
+  padding: 6rem 5% 3rem 5%;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nav-links {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .nav-links a {
+    margin: 0;
+  }
+
+  .nav-brand h1 {
+    font-size: 2rem;
+  }
+}
+
+/* css for layout css code */
+
+/* css for thanks.ejs code */
+
+/* Container for Thank You Section */
+.thankyou-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3rem;
+  padding: 4% 10%;
+  max-width: 1000px;
+  margin: auto;
+  background-color: #fffaf7;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Left Column: Image */
+.thankyou-image {
+  flex: 1 1 400px;
+}
+
+.thankyou-image img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.thankyou-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Right Column: Message */
+.thankyou-content {
+  flex: 1 1 400px;
+}
+
+/* Headings */
+.thankyou-content h1 {
+  font-family: "Baloo Bhaina", cursive;
+  font-size: 2.5rem; /* Large, readable heading */
+  color: #625a56;
+  margin-bottom: 1rem;
+}
+
+/* Paragraphs */
+.thankyou-content p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.8;
+}
+
+/* Home link styling */
+.home-link {
+  color: #ed4a0f;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.home-link:hover {
+  color: #ffb99f;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .thankyou-section {
+    flex-direction: column;
+    padding: 5% 5%;
+  }
+
+  .thankyou-image,
+  .thankyou-content {
+    width: 100%;
+  }
+
+  .thankyou-content h1 {
+    font-size: 2rem;
+  }
+
+  .thankyou-content p {
+    font-size: 1.1rem;
+  }
+}
+
+/* css for thanks.ejs code */
