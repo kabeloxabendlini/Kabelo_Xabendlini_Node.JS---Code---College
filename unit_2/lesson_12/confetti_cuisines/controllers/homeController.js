@@ -3,15 +3,15 @@
 var courses = [
   {
     title: "Event Driven Cakes",
-    cost: 50
+    cost: 50.75
   },
   {
     title: "Asynchronous Artichoke",
-    cost: 25
+    cost: 25.55
   },
   {
     title: "Object Oriented Orange Juice",
-    cost: 10
+    cost: 10.35
   }
 ];
 
