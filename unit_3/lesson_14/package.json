@@ -1,0 +1,19 @@
+{
+  "name": "lesson_14",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Kabelo Xabendlini",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-ejs-layouts": "^2.5.1",
+    "mongodb": "^3.6.3",
+    "something": "^0.0.1"
+  }
+}
