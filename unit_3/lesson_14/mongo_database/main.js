@@ -7,63 +7,59 @@ const homeController = require("./controllers/homeController");
 const layouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 
-// ✅ Define and register the Mongoose model properly
+// ✅ Define schema and model
 const subscriberSchema = new mongoose.Schema({
   name: String,
   email: String,
   zipCode: Number,
 });
 
-// Create the model
 const Subscriber = mongoose.model("Subscriber", subscriberSchema);
 
 // ✅ Connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/recipe_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true, // recommended for stability
-});
+mongoose
+  .connect("mongodb://localhost:27017/recipe_db", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Successfully connected to MongoDB using Mongoose!"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-const db = mongoose.connection;
+// ✅ Use an async function to handle database operations
+(async () => {
+  try {
+    // Create and save a new subscriber
+    const subscriber1 = new Subscriber({
+      name: "Kabelo Xabendlini",
+      email: "kabeloxabendlini@gmail.com",
+      zipCode: 12345,
+    });
 
-db.once("open", () => {
-  console.log("✅ Successfully connected to MongoDB using Mongoose!");
-});
+    const savedSubscriber1 = await subscriber1.save();
+    console.log("💾 Saved subscriber1:", savedSubscriber1);
 
-db.on("error", (err) => {
-  console.error("❌ MongoDB connection error:", err);
-});
+    // Alternative: Use .create() (no callback)
+    const savedKabelo = await Subscriber.create({
+      name: "Kabelo Xabendlini",
+      email: "kabeloxabendlini385@gmail.com",
+      zipCode: 12345,
+    });
+    console.log("💾 Saved Kabelo:", savedKabelo);
 
-// ✅ Create and save documents correctly
-const subscriber1 = new Subscriber({
-  name: "Kabelo Xabendlini",
-  email: "kabeloxabendlini@gmail.com",
-});
-subscriber1.save((error, savedDocument) => {
-  if (error) console.error(error);
-  else console.log("Saved subscriber1:", savedDocument);
-});
+    // Query example using await
+    const foundSubscriber = await Subscriber.findOne({ name: "Kabelo Xabendlini" })
+      .where("email")
+      .regex(/Xabendlini/);
 
-// ✅ .create() should match schema fields (no `note` field exists)
-Subscriber.create(
-  {
-    name: "Kabelo Xabendlini",
-    email: "kabeloxabendlini385@gmail.com",
-    zipCode: 12345,
-  },
-  (error, savedDocument) => {
-    if (error) console.error(error);
-    else console.log("Saved Kabelo:", savedDocument);
+    if (foundSubscriber) {
+      console.log("🔎 Found subscriber:", foundSubscriber.name);
+    } else {
+      console.log("⚠️ No matching subscriber found.");
+    }
+  } catch (error) {
+    console.error("❌ Database operation error:", error);
   }
-);
-
-// ✅ Query example
-Subscriber.findOne({ name: "Kabelo Xabendlini" })
-  .where("email").regex(/Xabendlini/)
-  .exec((error, data) => {
-    if (error) console.error(error);
-    else if (data) console.log("Found subscriber:", data.name);
-    else console.log("No matching subscriber found.");
-  });
+})();
 
 // ✅ Express configuration
 app.set("port", process.env.PORT || 3000);
@@ -71,11 +67,7 @@ app.set("view engine", "ejs");
 
 app.use(express.static("public"));
 app.use(layouts);
-app.use(
-  express.urlencoded({
-    extended: false,
-  })
-);
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(homeController.logRequestPaths);
 
@@ -89,7 +81,7 @@ app.post("/", (req, res) => {
   res.send("POST Successful!");
 });
 
-// ✅ Error handlers (must be after routes)
+// ✅ Error handlers (after routes)
 app.use(errorController.logErrors);
 app.use(errorController.respondNoResourceFound);
 app.use(errorController.respondInternalError);
