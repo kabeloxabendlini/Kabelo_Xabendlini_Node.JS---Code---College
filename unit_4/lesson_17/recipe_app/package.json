@@ -1,0 +1,24 @@
+{
+  "name": "recipe_app",
+  "version": "1.0.0",
+  "description": "A Node.js application using Express.js",
+  "license": "ISC",
+  "author": "Jada Mathele",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "debug": "^4.4.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "mongodb": "^3.6.3",
+    "mongoose": "^8.19.2"
+  },
+  "devDependencies": {
+    "http-status-codes": "^2.3.0"
+  }
+}
