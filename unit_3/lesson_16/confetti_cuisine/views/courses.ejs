@@ -1,18 +1,25 @@
-<div class="courses-container">
+<!-- ==============================
+     Courses Section
+     ============================== -->
+<section class="courses-container">
+  <!-- Left side: image -->
   <div class="courses-image">
-    <img src="images/people.jpg" alt="Cooking class participants">
+    <img src="/images/people.jpg" alt="Participants enjoying a cooking class together">
   </div>
+
+  <!-- Right side: course content -->
   <div class="courses-content">
     <h1 class="main-title">Learn to Cook Cutting-Edge Food</h1>
     <h2 class="section-title">Our Courses</h2>
 
+    <!-- Dynamic list of courses (EJS loop) -->
     <div class="courses-list">
       <% offeredCourses.forEach(course => { %>
-      <div class="course-item">
-        <h3 class="course-title"><%= course.title %></h3>
-        <span class="course-cost">$<%= course.cost %></span>
-      </div>
+        <article class="course-item">
+          <h3 class="course-title"><%= course.title %></h3>
+          <p class="course-cost">Cost: <strong>$<%= course.cost %></strong></p>
+        </article>
       <% }); %>
     </div>
   </div>
-</div>
+</section>

@@ -3,29 +3,73 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recipe App</title>
+
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="/css/bootstrap.css">
+
+  <!-- Custom App CSS -->
   <link rel="stylesheet" href="/css/recipe_app.css">
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar">
+  <!-- ==============================
+       Navigation Bar
+       ============================== -->
+  <!-- ==============================
+     Navigation Bar
+     ============================== -->
+<header>
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-left">
-      <h1 id="title">Recipe App</h1>
+      <a href="/" class="navbar-brand">Recipe App</a>
     </div>
+
+    <!-- Hamburger menu for mobile -->
+    <button class="navbar-toggle" aria-label="Toggle navigation">
+      &#9776;
+    </button>
+
     <div class="navbar-right">
       <a href="/" class="nav-button">Home</a>
       <a href="/courses" class="nav-button">Cooking Courses</a>
       <a href="/contact" class="nav-button">Contact</a>
     </div>
   </nav>
+</header>
 
-  <!-- Main Content -->
-  <main class="main-container">
+  <!-- ==============================
+       Main Content
+       ============================== -->
+  <main class="main-container" role="main">
+    <!-- EJS template placeholder for page content -->
     <%- body %>
   </main>
+
+  <!-- ==============================
+       Optional Footer (if needed)
+       ============================== -->
+  <footer>
+    <p style="text-align:center; padding:1rem; color:#555;">
+      &copy; <%= new Date().getFullYear() %> Recipe App. All rights reserved.
+    </p>
+  </footer>
+
+  <!-- Optional JS Scripts -->
+  <script src="/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  const toggleButton = document.querySelector('.navbar-toggle');
+  const navbarLinks = document.querySelector('.navbar-right');
+
+  toggleButton.addEventListener('click', () => {
+    navbarLinks.classList.toggle('active');
+  });
+</script>
 </body>
 
 </html>
