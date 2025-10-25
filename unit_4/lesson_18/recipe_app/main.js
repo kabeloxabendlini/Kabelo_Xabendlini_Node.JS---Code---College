@@ -12,11 +12,9 @@ const express = require("express"),
   Subscriber = require("./models/subscriber");
 mongoose.Promise = global.Promise;
 
-mongoose.connect(
-  "mongodb://0.0.0.0:27017/recipe_db",
-  { useNewUrlParser: true }
-);
-mongoose.set("useCreateIndex", true);
+mongoose.connect("mongodb://localhost:27017/recipe_db")
+  .then(() => console.log("Successfully connected to MongoDB"))
+  .catch(err => console.error("Connection error:", err));
 
 const db = mongoose.connection;
 
