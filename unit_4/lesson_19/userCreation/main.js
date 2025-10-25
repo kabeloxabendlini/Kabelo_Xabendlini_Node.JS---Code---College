@@ -5,7 +5,7 @@
  *  Express App Configuration
  * ==============================
  */
-
+const usersController = require("./controllers/usersController");
 const express = require("express");
 const app = express();
 const layouts = require("express-ejs-layouts");
@@ -14,6 +14,7 @@ const layouts = require("express-ejs-layouts");
 const homeController = require("./controllers/homeController");
 const subscriberController = require("./controllers/subscribersController");
 const errorController = require("./controllers/errorController");
+
 
 // Mongoose & Models
 const mongoose = require("mongoose");
@@ -89,6 +90,10 @@ app.get("/contact", subscriberController.getSubscriptionPage);
 
 // Save a new subscriber (form submission)
 app.post("/subscribe", subscriberController.saveSubscriber);
+
+// Create the index route.
+app.get("/users", usersController.index);
+
 
 /**
  * ==============================
