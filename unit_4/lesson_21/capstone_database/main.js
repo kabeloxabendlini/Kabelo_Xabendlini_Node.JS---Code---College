@@ -12,7 +12,7 @@ const layouts = require("express-ejs-layouts");
 // Controllers
 const homeController = require("./controllers/homeController");
 const subscriberController = require("./controllers/subscribersController");
-const usersController = require("./controllers/userController");
+const usersController = require("./controllers/usersController"); // ✅ Corrected filename (plural)
 const errorController = require("./controllers/errorController");
 
 // Mongoose & Models
@@ -29,13 +29,8 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
+  .then(() => console.log("✅ Successfully connected to MongoDB using Mongoose!"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
-const db = mongoose.connection;
-
-db.once("open", () => {
-  console.log("✅ Successfully connected to MongoDB using Mongoose!");
-});
 
 /**
  * ==============================
@@ -75,16 +70,22 @@ app.get("/courses", homeController.showCourses);
 app.post("/contact", homeController.postedSignUpForm);
 
 // Subscriber routes
-app.get("/subscribers", subscriberController.getAllSubscribers, (req, res) => {
-  res.render("subscribers", { subscribers: req.data });
-});
+app.get(
+  "/subscribers",
+  subscriberController.getAllSubscribers,
+  (req, res) => {
+    res.render("subscribers", { subscribers: req.data });
+  }
+);
 
+// Subscription form page
 app.get("/contact", subscriberController.getSubscriptionPage);
+
+// Save a new subscriber
 app.post("/subscribe", subscriberController.saveSubscriber);
 
-// User routes
-app.get("/users", usersController.index);
-
+// ✅ Users routes (fixed)
+app.get("/users", usersController.index, usersController.indexView);
 /**
  * ==============================
  *  Error Handling
@@ -95,9 +96,9 @@ app.use(errorController.respondInternalError);
 
 /**
  * ==============================
- *  Server Start
+ *  Start Server
  * ==============================
  */
 app.listen(app.get("port"), () => {
-  console.log(`🚀 Server running at http://localhost:${app.get("port")}`);
+  console.log(`🚀 Server running at: http://localhost:${app.get("port")}`);
 });

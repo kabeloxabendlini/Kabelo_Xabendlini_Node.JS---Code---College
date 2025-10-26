@@ -1,21 +1,14 @@
 "use strict";
 
-const httpStatus = require("http-status-codes");
-
-exports.logErrors = (error, req, res, next) => {
-  console.error(error.stack);
-  next(error);
+// 404 Not Found
+exports.respondNoResourceFound = (req, res, next) => {
+  res.status(404);
+  res.render("404", { url: req.originalUrl }); // make sure 404.ejs exists
 };
 
-exports.respondNoResourceFound = (req, res) => {
-  let errorCode = httpStatus.NOT_FOUND;
-  res.status(errorCode);
-  res.send(`${errorCode} | The page does not exist!`);
-};
-
-exports.respondInternalError = (error, req, res, next) => {
-  let errorCode = httpStatus.INTERNAL_SERVER_ERROR;
-  console.log(`ERROR occurred: ${error.stack}`);
-  res.status(errorCode);
-  res.send(`${errorCode} | Sorry, our application is experiencing a problem!`);
+// 500 Internal Server Error
+exports.respondInternalError = (err, req, res, next) => {
+  console.error("❌ Internal Server Error:", err);
+  res.status(500);
+  res.render("500", { error: err }); // make sure 500.ejs exists
 };

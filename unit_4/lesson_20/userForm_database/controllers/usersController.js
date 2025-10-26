@@ -1,64 +1,25 @@
 "use strict";
 
-const User = require("../models/user");
+// Example user data (replace with your real database model if needed)
+const User = require("../models/user"); // make sure you have a User model
 
-module.exports = {
-  index: (req, res, next) => {
-    User.find()
-      .then(users => {
-        res.locals.users = users;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching users: ${error.message}`);
-        next(error);
-      });
-  },
-  indexView: (req, res) => {
-    res.render("users/index");
-  },
-  new: (req, res) => {
-    res.render("users/new");
-  },
-  create: (req, res, next) => {
-    let userParams = {
-      name: {
-        first: req.body.first,
-        last: req.body.last
-      },
-      email: req.body.email,
-      password: req.body.password,
-      zipCode: req.body.zipCode
-    };
-    User.create(userParams)
-      .then(user => {
-        res.locals.redirect = "/users";
-        res.locals.user = user;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error saving user: ${error.message}`);
-        next(error);
-      });
-  },
-  redirectView: (req, res, next) => {
-    let redirectPath = res.locals.redirect;
-    if (redirectPath) res.redirect(redirectPath);
-    else next();
-  },
-  show: (req, res, next) => {
-    let userId = req.params.id;
-    User.findById(userId)
-      .then(user => {
-        res.locals.user = user;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching user by ID: ${error.message}`);
-        next(error);
-      });
-  },
-  showView: (req, res) => {
-    res.render("users/show");
+// Get all users
+exports.getAllUsers = async () => {
+  try {
+    const users = await User.find(); // fetch all users from MongoDB
+    return users;
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    throw err;
+  }
+};
+
+// Render users page
+exports.index = async (req, res, next) => {
+  try {
+    const users = await exports.getAllUsers();
+    res.render("users", { users }); // users.ejs must exist in your views folder
+  } catch (err) {
+    next(err);
   }
 };

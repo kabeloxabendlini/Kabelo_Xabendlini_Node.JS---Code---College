@@ -1,113 +1,102 @@
 "use strict";
 
-/**
- * ==============================
- *  Express App Configuration
- * ==============================
- */
-const usersController = require("./controllers/usersController");
 const express = require("express");
 const app = express();
 const layouts = require("express-ejs-layouts");
+const mongoose = require("mongoose");
 
 // Controllers
 const homeController = require("./controllers/homeController");
 const subscriberController = require("./controllers/subscribersController");
+const usersController = require("./controllers/usersController"); // make sure the file exists
 const errorController = require("./controllers/errorController");
 
-
-// Mongoose & Models
-const mongoose = require("mongoose");
+// Models
 const Subscriber = require("./models/subscriber");
 
-/**
- * ==============================
- *  MongoDB Connection (Mongoose)
- * ==============================
- */
+// ==============================
+// MongoDB Connection
+// ==============================
 mongoose
-  .connect("mongodb://0.0.0.0:27017/confetti_cuisine", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true, // improves connection stability
+  .connect("mongodb://127.0.0.1:27017/userForm_database", {
+    // removed deprecated options
   })
+  .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-// Log connection success
-db.once("open", () => {
-  console.log("✅ Successfully connected to MongoDB using Mongoose!");
-});
+// ==============================
+// Express Settings
+// ==============================
+app.set("port", process.env.PORT || 3000);
+app.set("view engine", "ejs");
 
-/**
- * ==============================
- *  Express App Settings
- * ==============================
- */
-app.set("port", process.env.PORT || 3000); // Dynamic port for deployment
-app.set("view engine", "ejs"); // Set EJS as the templating engine
+// ==============================
+// Middleware
+// ==============================
+app.use(express.static("public"));
+app.use(layouts);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-/**
- * ==============================
- *  Middleware Setup
- * ==============================
- */
-app.use(express.static("public")); // Serve static files (CSS, images, JS)
-app.use(layouts); // Enable EJS layouts
-app.use(
-  express.urlencoded({
-    extended: false, // Use classic querystring library
-  })
-);
-app.use(express.json()); // Parse JSON payloads
-
-/**
- * ==============================
- *  Route Definitions
- * ==============================
- */
+// ==============================
+// Routes
+// ==============================
 
 // Home page
-app.get("/", homeController.index); // → renders index.ejs
+app.get("/", homeController.index);
 
 // Courses page
-app.get("/courses", homeController.showCourses); // → renders courses.ejs
+app.get("/courses", homeController.showCourses);
 
-// Contact form submission (POST)
+// Contact form submission
 app.post("/contact", homeController.postedSignUpForm);
 
-// Subscriber routes
-app.get(
-  "/subscribers",
-  subscriberController.getAllSubscribers,
-  (req, res) => {
-    res.render("subscribers", { subscribers: req.data }); // → renders subscribers.ejs
+// Subscribers
+app.get("/subscribers", async (req, res, next) => {
+  try {
+    const subscribers = await Subscriber.find();
+    res.render("subscribers", { subscribers });
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 // Subscription form page
 app.get("/contact", subscriberController.getSubscriptionPage);
 
-// Save a new subscriber (form submission)
-app.post("/subscribe", subscriberController.saveSubscriber);
+// Save a new subscriber
+// async function to fetch subscribers
+app.get("/subscribers", async (req, res, next) => {
+  try {
+    const subscribers = await Subscriber.find(); // Make sure Subscriber model is imported
+    res.render("subscribers", { subscribers });
+  } catch (err) {
+    next(err);
+  }
+});
 
-// Create the index route.
-app.get("/users", usersController.index);
+// Users page
+app.get("/users", async (req, res, next) => {
+  try {
+    const users = await usersController.getAllUsers(); // Call the function
+    res.render("users", { users });
+  } catch (err) {
+    next(err);
+  }
+});
 
+// ==============================
+// Error Handling
+// ==============================
+app.use(errorController.respondNoResourceFound); // 404
+app.use(errorController.respondInternalError);   // 500
 
-/**
- * ==============================
- *  Error Handling Middleware
- * ==============================
- */
-app.use(errorController.respondNoResourceFound); // 404 handler
-app.use(errorController.respondInternalError); // 500 handler
-
-/**
- * ==============================
- *  Start Server
- * ==============================
- */
+// ==============================
+// Start Server
+// ==============================
 app.listen(app.get("port"), () => {
-  console.log(`🚀 Server running at: http://localhost:${app.get("port")}`);
+  console.log(`🚀 Server running at http://localhost:${app.get("port")}`);
 });
