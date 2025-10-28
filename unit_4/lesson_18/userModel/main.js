@@ -1,65 +1,79 @@
-"use strict";
+"use strict"; // Enforce strict mode for safer and cleaner JavaScript execution
 
 /**
  * ==============================
- *  Express App Configuration
+ *  Module Imports & App Setup
  * ==============================
  */
-const usersController = require("./controllers/usersController");
-const express = require("express");
-const app = express();
-const layouts = require("express-ejs-layouts");
 
-// Controllers
-const homeController = require("./controllers/homeController");
-const subscriberController = require("./controllers/subscribersController");
-const errorController = require("./controllers/errorController");
+const express = require("express"),
+  app = express(),
+  layouts = require("express-ejs-layouts"),
+  mongoose = require("mongoose"),
+  errorController = require("./controllers/errorController"), // Handles errors (404, 500, etc.)
+  homeController = require("./controllers/homeController"), // Handles homepage and general site routes
+  subscribersController = require("./controllers/subscribersController"), // Handles subscriber logic
+  usersController = require("./controllers/usersController"), // Handles user-related logic
+  coursesController = require("./controllers/coursesController"), // Handles course-related routes
+  Subscriber = require("./models/subscriber"); // Subscriber model (Mongoose schema for database entries)
 
-
-// Mongoose & Models
-const mongoose = require("mongoose");
-const Subscriber = require("./models/subscriber");
+// Tell Mongoose to use native JavaScript promises instead of deprecated ones
+mongoose.Promise = global.Promise;
 
 /**
  * ==============================
  *  MongoDB Connection (Mongoose)
  * ==============================
  */
-mongoose
-  .connect("mongodb://0.0.0.0:27017/confetti_cuisine", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true, // improves connection stability
-  })
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+
+// Connect to MongoDB database (named "recipe_db")
+mongoose.connect("mongodb://localhost:27017/recipe_db")
+  .then(() => console.log("✅ Successfully connected to MongoDB"))
+  .catch(err => console.error("❌ Connection error:", err));
 
 const db = mongoose.connection;
 
-// Log connection success
+// Log once the connection is fully established
 db.once("open", () => {
   console.log("✅ Successfully connected to MongoDB using Mongoose!");
 });
 
 /**
  * ==============================
- *  Express App Settings
+ *  Express App Configuration
  * ==============================
  */
-app.set("port", process.env.PORT || 3000); // Dynamic port for deployment
-app.set("view engine", "ejs"); // Set EJS as the templating engine
+
+// Define port (use environment variable if available, else default to 3000)
+app.set("port", process.env.PORT || 3000);
+
+// Set EJS as the view engine for rendering dynamic pages
+app.set("view engine", "ejs");
 
 /**
  * ==============================
  *  Middleware Setup
  * ==============================
  */
-app.use(express.static("public")); // Serve static files (CSS, images, JS)
-app.use(layouts); // Enable EJS layouts
+
+// Serve static files (CSS, JS, images) from the "public" directory
+app.use(express.static("public"));
+
+// Enable express-ejs-layouts for consistent layout templates
+app.use(layouts);
+
+// Parse incoming form data (URL-encoded payloads)
 app.use(
   express.urlencoded({
-    extended: false, // Use classic querystring library
+    extended: false // Use the classic query string library
   })
 );
-app.use(express.json()); // Parse JSON payloads
+
+// Parse incoming JSON data (for API or AJAX requests)
+app.use(express.json());
+
+// Custom middleware — logs all incoming request paths
+app.use(homeController.logRequestPaths);
 
 /**
  * ==============================
@@ -67,47 +81,48 @@ app.use(express.json()); // Parse JSON payloads
  * ==============================
  */
 
-// Home page
-app.get("/", homeController.index); // → renders index.ejs
+// ---------- Home Routes ----------
+app.get("/", homeController.index); // Render homepage (index.ejs)
+app.get("/contact", homeController.getSubscriptionPage); // Render contact/subscription form
 
-// Courses page
-app.get("/courses", homeController.showCourses); // → renders courses.ejs
+// ---------- Users Routes ----------
+// Display all users → calls two controller methods: index (fetch data) and indexView (render view)
+app.get("/users", usersController.index, usersController.indexView);
 
-// Contact form submission (POST)
-app.post("/contact", homeController.postedSignUpForm);
+// ---------- Subscribers Routes ----------
+// Display all subscribers → calls index (fetch) then indexView (render)
+app.get("/subscribers", subscribersController.index, subscribersController.indexView);
 
-// Subscriber routes
-app.get(
-  "/subscribers",
-  subscriberController.getAllSubscribers,
-  (req, res) => {
-    res.render("subscribers", { subscribers: req.data }); // → renders subscribers.ejs
-  }
-);
+// ---------- Courses Routes ----------
+// Display all available courses
+app.get("/courses", coursesController.index, coursesController.indexView);
 
-// Subscription form page
-app.get("/contact", subscriberController.getSubscriptionPage);
-
-// Save a new subscriber (form submission)
-app.post("/subscribe", subscriberController.saveSubscriber);
-
-// Create the index route.
-app.get("/users", usersController.index);
-
+// ---------- Form Submissions ----------
+// Handle new subscriber form submission (from contact page)
+app.post("/subscribe", subscribersController.saveSubscriber);
 
 /**
  * ==============================
  *  Error Handling Middleware
  * ==============================
  */
-app.use(errorController.respondNoResourceFound); // 404 handler
-app.use(errorController.respondInternalError); // 500 handler
+
+// Log all errors to the console (for debugging)
+app.use(errorController.logErrors);
+
+// Handle 404 errors (resource not found)
+app.use(errorController.respondNoResourceFound);
+
+// Handle 500 errors (internal server problems)
+app.use(errorController.respondInternalError);
 
 /**
  * ==============================
  *  Start Server
  * ==============================
  */
+
+// Start the Express server on the defined port
 app.listen(app.get("port"), () => {
   console.log(`🚀 Server running at: http://localhost:${app.get("port")}`);
 });

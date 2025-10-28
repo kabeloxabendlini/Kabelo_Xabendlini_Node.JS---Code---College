@@ -1,40 +1,43 @@
-"use strict";
+"use strict"; // Enforce strict mode for cleaner, safer JavaScript execution
 
 /**
  * ==============================
  *  Express App Configuration
  * ==============================
  */
-const usersController = require("./controllers/usersController");
+
+// Import Express framework and supporting libraries
 const express = require("express");
 const app = express();
 const layouts = require("express-ejs-layouts");
 
-// Controllers
+// Import controllers (separate files that handle route logic)
 const homeController = require("./controllers/homeController");
 const subscriberController = require("./controllers/subscribersController");
+const usersController = require("./controllers/usersController");
 const errorController = require("./controllers/errorController");
 
-
-// Mongoose & Models
+// Import Mongoose (for MongoDB connection and schema modeling)
 const mongoose = require("mongoose");
-const Subscriber = require("./models/subscriber");
+const Subscriber = require("./models/subscriber"); // Mongoose model for subscribers
 
 /**
  * ==============================
  *  MongoDB Connection (Mongoose)
  * ==============================
  */
+
+// Connect to MongoDB database named "confetti_cuisine"
 mongoose
   .connect("mongodb://0.0.0.0:27017/confetti_cuisine", {
     useNewUrlParser: true,
-    useUnifiedTopology: true, // improves connection stability
+    useUnifiedTopology: true, // Improves stability of database connections
   })
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 const db = mongoose.connection;
 
-// Log connection success
+// Once the connection is open, confirm success
 db.once("open", () => {
   console.log("✅ Successfully connected to MongoDB using Mongoose!");
 });
@@ -44,22 +47,34 @@ db.once("open", () => {
  *  Express App Settings
  * ==============================
  */
-app.set("port", process.env.PORT || 3000); // Dynamic port for deployment
-app.set("view engine", "ejs"); // Set EJS as the templating engine
+
+// Define port (from environment variable or default 3000)
+app.set("port", process.env.PORT || 3000);
+
+// Set the view engine to EJS for server-side rendering of HTML templates
+app.set("view engine", "ejs");
 
 /**
  * ==============================
  *  Middleware Setup
  * ==============================
  */
-app.use(express.static("public")); // Serve static files (CSS, images, JS)
-app.use(layouts); // Enable EJS layouts
+
+// Serve static assets (CSS, JS, images) from the "public" directory
+app.use(express.static("public"));
+
+// Enable use of layout templates (layout.ejs wraps each rendered view)
+app.use(layouts);
+
+// Parse URL-encoded form data (used in HTML form submissions)
 app.use(
   express.urlencoded({
-    extended: false, // Use classic querystring library
+    extended: false, // Use classic query string parser
   })
 );
-app.use(express.json()); // Parse JSON payloads
+
+// Parse JSON data in incoming requests (useful for APIs or AJAX)
+app.use(express.json());
 
 /**
  * ==============================
@@ -67,47 +82,58 @@ app.use(express.json()); // Parse JSON payloads
  * ==============================
  */
 
-// Home page
-app.get("/", homeController.index); // → renders index.ejs
+// ---------- Home Routes ----------
 
-// Courses page
-app.get("/courses", homeController.showCourses); // → renders courses.ejs
+// Render the homepage (index.ejs)
+app.get("/", homeController.index);
 
-// Contact form submission (POST)
+// Render the courses page (courses.ejs)
+app.get("/courses", homeController.showCourses);
+
+// Handle contact form submission (POST request from a form)
 app.post("/contact", homeController.postedSignUpForm);
 
-// Subscriber routes
+// ---------- Subscriber Routes ----------
+
+// Display all subscribers and render the "subscribers.ejs" view
 app.get(
   "/subscribers",
-  subscriberController.getAllSubscribers,
+  subscriberController.getAllSubscribers, // Fetch subscribers from DB
   (req, res) => {
-    res.render("subscribers", { subscribers: req.data }); // → renders subscribers.ejs
+    res.render("subscribers", { subscribers: req.data });
   }
 );
 
-// Subscription form page
+// Render the subscription/contact form
 app.get("/contact", subscriberController.getSubscriptionPage);
 
-// Save a new subscriber (form submission)
+// Handle form submission to save a new subscriber in MongoDB
 app.post("/subscribe", subscriberController.saveSubscriber);
 
-// Create the index route.
-app.get("/users", usersController.index);
+// ---------- User Routes ----------
 
+// Render a list of users (usersController handles DB fetch and rendering)
+app.get("/users", usersController.index);
 
 /**
  * ==============================
  *  Error Handling Middleware
  * ==============================
  */
-app.use(errorController.respondNoResourceFound); // 404 handler
-app.use(errorController.respondInternalError); // 500 handler
+
+// Handle 404 (page not found) errors
+app.use(errorController.respondNoResourceFound);
+
+// Handle 500 (server/internal) errors
+app.use(errorController.respondInternalError);
 
 /**
  * ==============================
  *  Start Server
  * ==============================
  */
+
+// Start the Express server and log the running URL
 app.listen(app.get("port"), () => {
   console.log(`🚀 Server running at: http://localhost:${app.get("port")}`);
 });
