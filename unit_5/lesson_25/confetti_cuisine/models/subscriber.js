@@ -1,39 +1,38 @@
 "use strict";
 
-const mongoose = require("mongoose"),
-  { Schema } = mongoose;
+const mongoose = require("mongoose");
 
-var subscriberSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true
-    },
-    email: {
-      type: String,
-      required: true,
-      lowercase: true,
-      unique: true
-    },
-    zipCode: {
-      type: Number,
-      min: [10000, "Zip code too short"],
-      max: 99999
-    },
-    courses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Course"
-      }
-    ]
+// Define schema
+const subscriberSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
   },
-  {
-    timestamps: true
-  }
-);
+  email: {
+    type: String,
+    required: true,
+    lowercase: true,
+    unique: true
+  },
+  zipCode: {
+    type: Number,
+    min: [10000, "Zip code too short"],
+    max: 99999
+  },
+  courses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course"
+    }
+  ]
+}, {
+  timestamps: true
+});
 
-subscriberSchema.methods.getInfo = function() {
-  return `Name: ${this.name} Email: ${this.email} Zip Code: ${this.zipCode}`;
-};
+// Virtual field for full name (optional)
+subscriberSchema.virtual("fullName").get(function () {
+  return this.name;
+});
 
-module.exports = mongo
+// Export the model correctly ✅
+module.exports = mongoose.model("Subscriber", subscriberSchema);

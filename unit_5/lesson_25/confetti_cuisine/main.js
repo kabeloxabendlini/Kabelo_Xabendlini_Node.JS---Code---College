@@ -1,125 +1,98 @@
 "use strict";
 
-const express = require("express"),
-  layouts = require("express-ejs-layouts"),
-  app = express(),
-  router = express.Router(),
-  homeController = require("./controllers/homeController"),
-  errorController = require("./controllers/errorController"),
-  subscribersController = require("./controllers/subscribersController.js"),
-  usersController = require("./controllers/usersController.js"),
-  coursesController = require("./controllers/coursesController.js"),
-  mongoose = require("mongoose"),
-  methodOverride = require("method-override"),
-  passport = require("passport"),
-  cookieParser = require("cookie-parser"),
-  expressSession = require("express-session"),
-  expressValidator = require("express-validator"),
-  connectFlash = require("connect-flash"),
-  User = require("./models/user");
+// =======================
+// Module Imports
+// =======================
+const express = require("express");
+const layouts = require("express-ejs-layouts");
+const mongoose = require("mongoose");
+const methodOverride = require("method-override");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
+const connectFlash = require("connect-flash");
 
-mongoose.connect(
-  "mongodb://0.0.0.0:27017/confetti_cuisine",
-  { useNewUrlParser: true }
-);
-mongoose.set("useCreateIndex", true);
+// =======================
+// App Initialization
+// =======================
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.set("port", process.env.PORT || 3000);
+// =======================
+// Database Connection
+// =======================
+mongoose.connect("mongodb://127.0.0.1:27017/confetti_cuisine")
+  .then(() => console.log("✅ Successfully connected to MongoDB using Mongoose!"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
+
+// =======================
+// App Configuration
+// =======================
 app.set("view engine", "ejs");
+app.set("port", PORT);
+app.use(layouts);
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(methodOverride("_method", { methods: ["POST", "GET"] }));
+app.use(cookieParser("secret_passcode"));
+app.use(expressSession({
+  secret: "secret_passcode",
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(connectFlash());
 
-router.use(
-  methodOverride("_method", {
-    methods: ["POST", "GET"]
-  })
-);
-
-router.use(layouts);
-router.use(express.static("public"));
-router.use(expressValidator());
-router.use(
-  express.urlencoded({
-    extended: false
-  })
-);
-router.use(express.json());
-
-router.use(cookieParser("secretCuisine123"));
-router.use(
-  expressSession({
-    secret: "secretCuisine123",
-    cookie: {
-      maxAge: 4000000
-    },
-    resave: false,
-    saveUninitialized: false
-  })
-);
-router.use(connectFlash());
-
-router.use(passport.initialize());
-router.use(passport.session());
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-router.use((req, res, next) => {
-  res.locals.loggedIn = req.isAuthenticated();
-  res.locals.currentUser = req.user;
+// =======================
+// Middleware for Flash Messages
+// =======================
+app.use((req, res, next) => {
   res.locals.flashMessages = req.flash();
   next();
 });
 
-router.get("/", homeController.index);
+// =======================
+// Controllers
+// =======================
+const homeController = require("./controllers/homeController");
+const subscribersController = require("./controllers/subscribersController");
+const usersController = require("./controllers/usersController");
+const errorController = require("./controllers/errorController");
 
-router.get("/users", usersController.index, usersController.indexView);
-router.get("/users/new", usersController.new);
-router.post(
-  "/users/create",
-  usersController.validate,
-  usersController.create,
-  usersController.redirectView
-);
-router.get("/users/login", usersController.login);
-router.post("/users/login", usersController.authenticate);
-router.get("/users/logout", usersController.logout, usersController.redirectView);
-router.get("/users/:id/edit", usersController.edit);
-router.put("/users/:id/update", usersController.update, usersController.redirectView);
-router.get("/users/:id", usersController.show, usersController.showView);
-router.delete("/users/:id/delete", usersController.delete, usersController.redirectView);
+// =======================
+// Global template variables
+// =======================
+app.use((req, res, next) => {
+  res.locals.loggedIn = req.session && req.session.userId ? true : false;
+  res.locals.currentUser = req.user || null;
+  next();
+});
 
-router.get("/subscribers", subscribersController.index, subscribersController.indexView);
-router.get("/subscribers/new", subscribersController.new);
-router.post(
-  "/subscribers/create",
-  subscribersController.create,
-  subscribersController.redirectView
-);
-router.get("/subscribers/:id/edit", subscribersController.edit);
-router.put(
-  "/subscribers/:id/update",
-  subscribersController.update,
-  subscribersController.redirectView
-);
-router.get("/subscribers/:id", subscribersController.show, subscribersController.showView);
-router.delete(
-  "/subscribers/:id/delete",
-  subscribersController.delete,
-  subscribersController.redirectView
-);
+// =======================
+// Routes
+// =======================
+app.get("/", homeController.index);
+app.get("/contact", homeController.contact);
 
-router.get("/courses", coursesController.index, coursesController.indexView);
-router.get("/courses/new", coursesController.new);
-router.post("/courses/create", coursesController.create, coursesController.redirectView);
-router.get("/courses/:id/edit", coursesController.edit);
-router.put("/courses/:id/update", coursesController.update, coursesController.redirectView);
-router.get("/courses/:id", coursesController.show, coursesController.showView);
-router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
+app.get("/subscribers", subscribersController.index);
+app.get("/subscribers/new", subscribersController.new);
+app.post("/subscribers/create", subscribersController.create);
 
-router.use(errorController.pageNotFoundError);
-router.use(errorController.internalServerError);
+app.get("/users", usersController.index);
+app.get("/users/new", usersController.new);
+app.post("/users/create", usersController.create);
+app.get("/users/login", usersController.login);
+app.post("/users/login", usersController.authenticate);
 
-app.use("/", router);
+// =======================
+// Error Handling
+// =======================
+app.use(errorController.pageNotFoundError);
+app.use(errorController.internalServerError);
 
-app.listen(app.get("port"), () => {
-  console.log(`Server running at http://localhost:${app.get("port")}`);
+// =======================
+// Server Start
+// =======================
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });

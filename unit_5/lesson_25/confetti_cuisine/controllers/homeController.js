@@ -1,7 +1,9 @@
 "use strict";
 
-module.exports = {
-  index: (req, res) => {
-    res.render("index");
-  }
+exports.index = (req, res) => {
+  res.render("index", { title: "Welcome to Confetti Cuisine" });
+};
+
+exports.contact = (req, res) => {
+  res.render("contact");
 };
