@@ -1,21 +1,13 @@
+// controllers/errorController.js
 "use strict";
 
-const httpStatus = require("http-status-codes");
-
-exports.logErrors = (error, req, res, next) => {
-  console.error(error.stack);
-  next(error);
+exports.pageNotFoundError = (req, res, next) => {
+  res.status(404);
+  res.render("404"); // 404.ejs must exist in views
 };
 
-exports.respondNoResourceFound = (req, res) => {
-  let errorCode = httpStatus.NOT_FOUND;
-  res.status(errorCode);
-  res.send(`${errorCode} | The page does not exist!`);
-};
-
-exports.respondInternalError = (error, req, res, next) => {
-  let errorCode = httpStatus.INTERNAL_SERVER_ERROR;
-  console.log(`ERROR occurred: ${error.stack}`);
-  res.status(errorCode);
-  res.send(`${errorCode} | Sorry, our application is experiencing a problem!`);
+exports.internalServerError = (err, req, res, next) => {
+  console.error("❌ Internal Server Error:", err.stack);
+  res.status(500);
+  res.render("500", { error: err }); // 500.ejs must exist in views
 };
