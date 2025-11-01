@@ -1,6 +1,8 @@
 "use strict";
 
 const Course = require("../models/course");
+const httpStatus = require("http-status-codes");
+const User = require("../models/user");
 
 module.exports = {
   index: (req, res, next) => {
@@ -15,7 +17,11 @@ module.exports = {
       });
   },
   indexView: (req, res) => {
-    res.render("courses/index");
+    if (req.query.format === "json") {
+      res.json(res.locals.courses);
+    } else {
+      res.render("courses/index");
+    }
   },
   new: (req, res) => {
     res.render("courses/new");
@@ -111,5 +117,71 @@ module.exports = {
     let redirectPath = res.locals.redirect;
     if (redirectPath !== undefined) res.redirect(redirectPath);
     else next();
+  },
+
+  respondJSON: (req, res) => {
+    res.json({
+      status: httpStatus.OK,//status code 200
+      data: res.locals
+    });
+  },
+
+  errorJSON: (error, req, res, next) => {
+    //display the error message and determines type of error (via status code)
+    let errorObject;
+
+    if (error) {
+      errorObject = {
+        status: httpStatus.INTERNAL_SERVER_ERROR,//status code 500
+        message: error.message
+      };
+    } else {
+      errorObject = {
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: "Unknown Error."
+      };
+    }
+    //responds with errorObject in the browser
+    res.json(errorObject);
+  },
+
+  join: (req, res, next) => {
+    let courseId = req.params.id;
+    let currentUser = req.user;
+
+    //if user is logged in
+    if (currentUser) {
+      User.findByIdAndUpdate(currentUser, {
+        $addToSet: {
+          //course's ID gets added to the courses array
+          courses: courseId
+        }
+      })
+        .then(() => {
+          res.locals.success = true;
+          next();
+        })
+        .catch(error => {
+          next(error);
+        });
+    } else {
+      next(new Error("User must log in."));
+    }
+  },
+
+  filterUserCourses: (req, res, next) => {
+    let currentUser = res.locals.currentUser;
+    if (currentUser) {
+      let mappedCourses = res.locals.courses.map(course => {
+        let userJoined = currentUser.courses.some(userCourse => {
+          return userCourse.equals(course._id);
+        });
+        return Object.assign(course.toObject(), { joined: userJoined });
+      });
+      res.locals.courses = mappedCourses;
+      next();
+    } else {
+      next();
+    }
   }
 };

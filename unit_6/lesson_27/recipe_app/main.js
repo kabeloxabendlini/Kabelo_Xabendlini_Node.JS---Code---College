@@ -1,25 +1,29 @@
 "use strict";
 
-const express = require("express");
-const app = express();
-// const router = express.Router();
-const layouts = require("express-ejs-layouts");
-const mongoose = require("mongoose");
-const methodOverride = require("method-override");
-const expressSession = require("express-session");
-const cookieParser = require("cookie-parser");
-const connectFlash = require("connect-flash");
-const passport = require("passport");
-const homeController = require("./controllers/homeController");
-const subscribersController = require("./controllers/subscribersController");
-const User = require("./models/user");
-const router = require("./routes/index");
+const express = require("express"),
+  app = express(),
+  router = require("./routes/index"),
+  layouts = require("express-ejs-layouts"),
+  mongoose = require("mongoose"),
+  methodOverride = require("method-override"),
+  expressSession = require("express-session"),
+  cookieParser = require("cookie-parser"),
+  connectFlash = require("connect-flash"),
+  expressValidator = require("express-validator"),
+  passport = require("passport"),
+  errorController = require("./controllers/errorController"),
+  homeController = require("./controllers/homeController"),
+  subscribersController = require("./controllers/subscribersController"),
+  usersController = require("./controllers/usersController"),
+  coursesController = require("./controllers/coursesController"),
+  User = require("./models/user");
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect("mongodb://0.0.0.0:27017/recipe_db", {
-  useNewUrlParser: true,
-});
+mongoose.connect(
+  "mongodb://0.0.0.0:27017/recipe_db",
+  { useNewUrlParser: true }
+);
 mongoose.set("useCreateIndex", true);
 
 const db = mongoose.connection;
@@ -35,13 +39,13 @@ app.use(express.static("public"));
 app.use(layouts);
 app.use(
   express.urlencoded({
-    extended: false,
+    extended: false
   })
 );
 
 app.use(
   methodOverride("_method", {
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET"]
   })
 );
 
@@ -51,10 +55,10 @@ app.use(
   expressSession({
     secret: "secret_passcode",
     cookie: {
-      maxAge: 4000000,
+      maxAge: 4000000
     },
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
   })
 );
 
@@ -65,26 +69,13 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use(connectFlash());
 
-//-----------------------------------------------------------------
 app.use((req, res, next) => {
   res.locals.loggedIn = req.isAuthenticated();
   res.locals.currentUser = req.user;
   res.locals.flashMessages = req.flash();
   next();
 });
-
-app.use(homeController.logRequestPaths);
-
-// HOME ROUTES REMOVED
-
-// USER ROUTES REMOVED
-
-// SUBSCRIBER ROUTES REMOVED
-app.post("/subscribe", subscribersController.saveSubscriber);
-
-// COURSE ROUTES REMOVED
-
-// ERROR ROUTES REMOVED
+app.use(expressValidator());
 
 app.use("/", router);
 
