@@ -1,9 +1,13 @@
-const router = require("express").Router();
+"use strict";
+
+const express = require("express");
+const router = express.Router();
 const errorController = require("../controllers/errorController");
 
+// Handle 404 errors
+router.use(errorController.pageNotFound);
 
-router.use(errorController.logErrors);
-router.use(errorController.respondNoResourceFound);
-router.use(errorController.respondInternalError);
+// Handle 500 errors
+router.use(errorController.internalServerError);
 
 module.exports = router;
