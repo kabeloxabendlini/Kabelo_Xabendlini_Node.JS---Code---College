@@ -19,7 +19,7 @@ const coursesController = require("./controllers/coursesController");
 
 // MongoDB connection
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://0.0.0.0:27017/recipe_db", {
+mongoose.connect("mongodb://127.0.0.1:27017/recipe_db", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -27,36 +27,39 @@ mongoose.connect("mongodb://0.0.0.0:27017/recipe_db", {
 const db = mongoose.connection;
 
 db.once("open", () => {
-  console.log("Successfully connected to MongoDB!");
+  console.log("✅ Successfully connected to MongoDB!");
 });
 
 db.on("error", (err) => {
-  console.error(`MongoDB connection error: ${err}`);
+  console.error(`❌ MongoDB connection error: ${err}`);
 });
 
 // App settings
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
 
-// Middleware
-router.use(express.static("public"));
-router.use(layouts);
-router.use(express.urlencoded({ extended: false }));
-router.use(express.json());
-router.use(methodOverride("_method", { methods: ["POST", "GET"] }));
-router.use(cookieParser("secret_passcode"));
-router.use(expressSession({
+// ---------- Middleware ----------
+app.use(express.static("public"));
+app.use(layouts);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(methodOverride("_method", { methods: ["POST", "GET"] }));
+app.use(cookieParser("secret_passcode"));
+app.use(expressSession({
   secret: "secret_passcode",
   cookie: { maxAge: 4000000 },
   resave: false,
   saveUninitialized: false
 }));
-router.use(connectFlash());
-router.use((req, res, next) => {
+app.use(connectFlash());
+
+// Flash message middleware
+app.use((req, res, next) => {
   res.locals.flashMessages = req.flash();
   next();
 });
 
+// ---------- ROUTES ----------
 // HOME
 router.use(homeController.logRequestPaths);
 router.get("/", homeController.index);
@@ -92,15 +95,15 @@ router.put("/courses/:id/update", coursesController.update, coursesController.re
 router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
 router.get("/courses/:id", coursesController.show, coursesController.showView);
 
-// ERROR HANDLING
-router.use(errorController.logErrors);
-router.use(errorController.respondNoResourceFound);
-router.use(errorController.respondInternalError);
+// ---------- ERROR HANDLING ----------
+app.use(errorController.logErrors);
+app.use(errorController.respondNoResourceFound);
+app.use(errorController.respondInternalError);
 
-// Use the router
+// Use router
 app.use("/", router);
 
 // Start server
 app.listen(app.get("port"), () => {
-  console.log(`Server running at http://localhost:${app.get("port")}`);
+  console.log(`🚀 Server running at http://localhost:${app.get("port")}`);
 });

@@ -22,9 +22,9 @@ const subscriberController = require("./controllers/subscribersController"); // 
  */
 
 // Connect to MongoDB using Mongoose
-mongoose.connect("mongodb://0.0.0.0:27017/confetti_cuisine", {
-  useNewUrlParser: true, // Enables new URL string parser
-});
+mongoose.connect("mongodb://127.0.0.1:27017/capstone_database")
+  .then(() => console.log("✅ Successfully connected to MongoDB using Mongoose!"))
+  .catch(err => console.error("❌ Connection error:", err));
 
 // Store the database connection
 const db = mongoose.connection;

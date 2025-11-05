@@ -6,46 +6,24 @@ const router = express.Router();
 const layouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
+const connectFlash = require("connect-flash");
+
+// Controllers
 const errorController = require("./controllers/errorController");
 const homeController = require("./controllers/homeController");
 const subscribersController = require("./controllers/subscribersController");
 const usersController = require("./controllers/usersController");
 const coursesController = require("./controllers/coursesController");
-const Subscriber = require("./models/subscriber");
-
-const expressSession = require("express-session");
-const cookieParser = require("cookie-parser");
-const connectFlash = require("connect-flash");
-
-//*Requiring flash messaging in main.js*//
-
-cookieParser = require("cookie-parser"),
-  connectFlash = require("connect-flash");
-router.use(cookieParser("secret_passcode"));
-router.use(expressSession({
-  secret: "secret_passcode",
-  cookie: {
-    maxAge: 4000000
-  },
-  resave: false,
-  saveUninitialized: false
-}));
-router.use(connectFlash());
 
 // ===============================
-// ✅ MONGOOSE CONFIGURATION (Updated for Mongoose 8)
+// MONGOOSE CONFIGURATION
 // ===============================
-
-// Use native promises
 mongoose.Promise = global.Promise;
 
-// ⚠️ Removed deprecated options like `useCreateIndex`
-// Mongoose 8 automatically uses modern defaults.
 mongoose
-  .connect("mongodb://127.0.0.1:27017/recipe_db", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  .connect("mongodb://127.0.0.1:27017/recipe_db")
   .then(() => console.log("✅ Successfully connected to MongoDB using Mongoose!"))
   .catch(error => console.error("❌ MongoDB connection error:", error));
 
@@ -55,39 +33,37 @@ mongoose
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
 
-router.use(express.static("public"));
-router.use(layouts);
-router.use(express.urlencoded({ extended: false }));
-router.use(express.json());
+// ===============================
+// GLOBAL MIDDLEWARE
+// ===============================
+app.use(express.static("public"));
+app.use(layouts);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(methodOverride("_method", { methods: ["POST", "GET"] }));
+app.use(cookieParser("secret_passcode"));
+app.use(expressSession({
+  secret: "secret_passcode",
+  cookie: { maxAge: 4000000 },
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(connectFlash());
 
-router.use(
-  methodOverride("_method", {
-    methods: ["POST", "GET"],
-  })
-);
-
-router.use(cookieParser("secret_passcode"));
-router.use(
-  expressSession({
-    secret: "secret_passcode",
-    cookie: { maxAge: 4000000 },
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
-router.use(connectFlash());
-router.use((req, res, next) => {
+// Flash message middleware
+app.use((req, res, next) => {
   res.locals.flashMessages = req.flash();
   next();
 });
+
+// Log all requests
+app.use(homeController.logRequestPaths);
 
 // ===============================
 // ROUTES
 // ===============================
 
 // HOME
-router.use(homeController.logRequestPaths);
 router.get("/", homeController.index);
 router.get("/contact", homeController.getSubscriptionPage);
 
@@ -119,14 +95,15 @@ router.put("/courses/:id/update", coursesController.update, coursesController.re
 router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
 router.get("/courses/:id", coursesController.show, coursesController.showView);
 
+// Use the router
+app.use("/", router);
+
 // ===============================
 // ERROR HANDLING
 // ===============================
-router.use(errorController.logErrors);
-router.use(errorController.respondNoResourceFound);
-router.use(errorController.respondInternalError);
-
-app.use("/", router);
+app.use(errorController.logErrors);
+app.use(errorController.respondNoResourceFound);
+app.use(errorController.respondInternalError);
 
 // ===============================
 // SERVER START
