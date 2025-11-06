@@ -3,106 +3,58 @@
 const Course = require("../models/course");
 
 module.exports = {
-  index: (req, res, next) => {
-    Course.find({})
-      .then(courses => {
-        res.locals.courses = courses;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching courses: ${error.message}`);
-        next(error);
-      });
+  index: async (req, res, next) => {
+    try {
+      const courses = await Course.find();
+      res.locals.courses = courses;
+      next();
+    } catch (err) { next(err); }
   },
-  indexView: (req, res) => {
-    res.render("courses/index");
+  indexView: (req, res) => res.render("courses/index"),
+  new: (req, res) => res.render("courses/new"),
+  create: async (req, res, next) => {
+    try {
+      const course = new Course(req.body);
+      await course.save();
+      req.flash("success", "Course created!");
+      res.locals.redirect = "/courses";
+      next();
+    } catch (err) {
+      req.flash("error", err.message);
+      res.locals.redirect = "/courses/new";
+      next();
+    }
   },
-  new: (req, res) => {
-    res.render("courses/new");
+  show: async (req, res, next) => {
+    try {
+      const course = await Course.findById(req.params.id);
+      res.locals.course = course;
+      next();
+    } catch (err) { next(err); }
   },
-  create: (req, res, next) => {
-    let courseParams = {
-      title: req.body.title,
-      description: req.body.description,
-      items: [req.body.items.split(",")],
-      zipCode: req.body.zipCode
-    };
-    Course.create(courseParams)
-      .then(course => {
-        res.locals.redirect = "/courses";
-        res.locals.course = course;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error saving course: ${error.message}`);
-        next(error);
-      });
+  showView: (req, res) => res.render("courses/show"),
+  edit: async (req, res, next) => {
+    try {
+      const course = await Course.findById(req.params.id);
+      res.render("courses/edit", { course });
+    } catch (err) { next(err); }
   },
-  show: (req, res, next) => {
-    let courseId = req.params.id;
-    Course.findById(courseId)
-      .then(course => {
-        res.locals.course = course;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching course by ID: ${error.message}`);
-        next(error);
-      });
+  update: async (req, res, next) => {
+    try {
+      await Course.findByIdAndUpdate(req.params.id, req.body);
+      res.locals.redirect = `/courses/${req.params.id}`;
+      next();
+    } catch (err) { next(err); }
   },
-  showView: (req, res) => {
-    res.render("courses/show");
-  },
-  edit: (req, res, next) => {
-    let courseId = req.params.id;
-    Course.findById(courseId)
-      .then(course => {
-        res.render("courses/edit", {
-          course: course
-        });
-      })
-      .catch(error => {
-        console.log(`Error fetching course by ID: ${error.message}`);
-        next(error);
-      });
-  },
-  update: (req, res, next) => {
-    let courseId = req.params.id,
-      courseParams = {
-        title: req.body.title,
-        description: req.body.description,
-        items: [req.body.items.split(",")],
-        zipCode: req.body.zipCode
-      };
-
-    Course.findByIdAndUpdate(courseId, {
-      $set: courseParams
-    })
-      .then(course => {
-        res.locals.redirect = `/courses/${courseId}`;
-        res.locals.course = course;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error updating course by ID: ${error.message}`);
-        next(error);
-      });
-  },
-  delete: (req, res, next) => {
-    let courseId = req.params.id;
-    Course.findByIdAndRemove(courseId)
-      .then(() => {
-        res.locals.redirect = "/courses";
-        next();
-      })
-      .catch(error => {
-        console.log(`Error deleting course by ID: ${error.message}`);
-        next();
-      });
+  delete: async (req, res, next) => {
+    try {
+      await Course.findByIdAndRemove(req.params.id);
+      res.locals.redirect = "/courses";
+      next();
+    } catch (err) { next(err); }
   },
   redirectView: (req, res, next) => {
-    let redirectPath = res.locals.redirect;
-    if (redirectPath !== undefined) res.redirect(redirectPath);
+    if (res.locals.redirect) res.redirect(res.locals.redirect);
     else next();
   }
 };

@@ -3,121 +3,71 @@
 const Subscriber = require("../models/subscriber");
 
 module.exports = {
-  index: (req, res, next) => {
-    Subscriber.find({})
-      .then(subscribers => {
-        res.locals.subscribers = subscribers;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching subscribers: ${error.message}`);
-        next(error);
-      });
+  index: async (req, res, next) => {
+    try {
+      const subscribers = await Subscriber.find();
+      res.locals.subscribers = subscribers;
+      next();
+    } catch (err) { next(err); }
   },
-
-  indexView: (req, res) => {
-    res.render("subscribers/index");
+  indexView: (req, res) => res.render("subscribers/index"),
+  new: (req, res) => res.render("subscribers/new"),
+  create: async (req, res, next) => {
+    try {
+      const subscriber = new Subscriber(req.body);
+      await subscriber.save();
+      req.flash("success", "Subscriber created!");
+      res.locals.redirect = "/subscribers";
+      next();
+    } catch (err) {
+      req.flash("error", err.message);
+      res.locals.redirect = "/subscribers/new";
+      next();
+    }
   },
-
-  saveSubscriber: (req, res) => {
-    let newSubscriber = new Subscriber({
-      name: req.body.name,
-      email: req.body.email,
-      zipCode: req.body.zipCode
-    });
-    newSubscriber
-      .save()
-      .then(result => {
-        res.render("thanks");
-      })
-      .catch(error => {
-        if (error) res.send(error);
-      });
+  show: async (req, res, next) => {
+    try {
+      const subscriber = await Subscriber.findById(req.params.id);
+      res.locals.subscriber = subscriber;
+      next();
+    } catch (err) { next(err); }
   },
-  new: (req, res) => {
-    res.render("subscribers/new");
+  showView: (req, res) => res.render("subscribers/show"),
+  edit: async (req, res, next) => {
+    try {
+      const subscriber = await Subscriber.findById(req.params.id);
+      res.render("subscribers/edit", { subscriber });
+    } catch (err) { next(err); }
   },
-  create: (req, res, next) => {
-    let subscriberParams = {
-      name: req.body.name,
-      email: req.body.email,
-      zipCode: req.body.zipCode
-    };
-    Subscriber.create(subscriberParams)
-      .then(subscriber => {
-        res.locals.redirect = "/subscribers";
-        res.locals.subscriber = subscriber;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error saving subscriber: ${error.message}`);
-        next(error);
-      });
+  update: async (req, res, next) => {
+    try {
+      await Subscriber.findByIdAndUpdate(req.params.id, req.body);
+      res.locals.redirect = `/subscribers/${req.params.id}`;
+      next();
+    } catch (err) { next(err); }
   },
-  show: (req, res, next) => {
-    let subscriberId = req.params.id;
-    Subscriber.findById(subscriberId)
-      .then(subscriber => {
-        res.locals.subscriber = subscriber;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error fetching subscriber by ID: ${error.message}`);
-        next(error);
-      });
+  delete: async (req, res, next) => {
+    try {
+      await Subscriber.findByIdAndRemove(req.params.id);
+      res.locals.redirect = "/subscribers";
+      next();
+    } catch (err) { next(err); }
   },
-  showView: (req, res) => {
-    res.render("subscribers/show");
-  },
-  edit: (req, res, next) => {
-    let subscriberId = req.params.id;
-    Subscriber.findById(subscriberId)
-      .then(subscriber => {
-        res.render("subscribers/edit", {
-          subscriber: subscriber
-        });
-      })
-      .catch(error => {
-        console.log(`Error fetching subscriber by ID: ${error.message}`);
-        next(error);
-      });
-  },
-  update: (req, res, next) => {
-    let subscriberId = req.params.id,
-      subscriberParams = {
-        name: req.body.name,
-        email: req.body.email,
-        zipCode: req.body.zipCode
-      };
-
-    Subscriber.findByIdAndUpdate(subscriberId, {
-      $set: subscriberParams
-    })
-      .then(subscriber => {
-        res.locals.redirect = `/subscribers/${subscriberId}`;
-        res.locals.subscriber = subscriber;
-        next();
-      })
-      .catch(error => {
-        console.log(`Error updating subscriber by ID: ${error.message}`);
-        next(error);
-      });
-  },
-  delete: (req, res, next) => {
-    let subscriberId = req.params.id;
-    Subscriber.findByIdAndRemove(subscriberId)
-      .then(() => {
-        res.locals.redirect = "/subscribers";
-        next();
-      })
-      .catch(error => {
-        console.log(`Error deleting subscriber by ID: ${error.message}`);
-        next();
-      });
+  saveSubscriber: async (req, res, next) => {
+    try {
+      const subscriber = new Subscriber(req.body);
+      await subscriber.save();
+      req.flash("success", "Thanks for subscribing!");
+      res.locals.redirect = "/";
+      next();
+    } catch (err) {
+      req.flash("error", err.message);
+      res.locals.redirect = "/";
+      next();
+    }
   },
   redirectView: (req, res, next) => {
-    let redirectPath = res.locals.redirect;
-    if (redirectPath !== undefined) res.redirect(redirectPath);
+    if (res.locals.redirect) res.redirect(res.locals.redirect);
     else next();
   }
 };
