@@ -1,20 +1,20 @@
 "use strict";
 
 const User = require("../models/user"),
-  passport = require("passport"),
-  getUserParams = body => {
-    return {
-      name: {
-        first: body.first,
-        last: body.last
-      },
-      email: body.email,
-      password: body.password,
-      zipCode: body.zipCode
-    };
-  };
+  passport = require("passport");
+
+// Helper function to extract user params safely
+const getUserParams = body => ({
+  name: {
+    first: body.first,
+    last: body.last
+  },
+  email: body.email,
+  zipCode: body.zipCode
+});
 
 module.exports = {
+  // Show all users
   index: (req, res, next) => {
     User.find()
       .then(users => {
@@ -26,32 +26,45 @@ module.exports = {
         next(error);
       });
   },
+
   indexView: (req, res) => {
     res.render("users/index");
   },
+
+  // Render registration form
   new: (req, res) => {
     res.render("users/new");
   },
+
+  // Handle new user registration
   create: (req, res, next) => {
     if (req.skip) next();
+
     let newUser = new User(getUserParams(req.body));
+
     User.register(newUser, req.body.password, (error, user) => {
       if (user) {
         req.flash("success", `${user.fullName}'s account created successfully!`);
         res.locals.redirect = "/users";
         next();
       } else {
-        req.flash("error", `Failed to create user account because: ${error.message}.`);
+        req.flash(
+          "error",
+          `Failed to create user account because: ${error.message}.`
+        );
         res.locals.redirect = "/users/new";
         next();
       }
     });
   },
+
   redirectView: (req, res, next) => {
     let redirectPath = res.locals.redirect;
     if (redirectPath) res.redirect(redirectPath);
     else next();
   },
+
+  // Show single user
   show: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
@@ -64,36 +77,37 @@ module.exports = {
         next(error);
       });
   },
+
   showView: (req, res) => {
     res.render("users/show");
   },
+
+  // Edit user profile
   edit: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
       .then(user => {
-        res.render("users/edit", {
-          user: user
-        });
+        res.render("users/edit", { user });
       })
       .catch(error => {
         console.log(`Error fetching user by ID: ${error.message}`);
         next(error);
       });
   },
+
+  // Update user info
   update: (req, res, next) => {
-    let userId = req.params.id,
-      userParams = {
-        name: {
-          first: req.body.first,
-          last: req.body.last
-        },
-        email: req.body.email,
-        password: req.body.password,
-        zipCode: req.body.zipCode
-      };
-    User.findByIdAndUpdate(userId, {
-      $set: userParams
-    })
+    let userId = req.params.id;
+    let userParams = {
+      name: {
+        first: req.body.first,
+        last: req.body.last
+      },
+      email: req.body.email,
+      zipCode: req.body.zipCode
+    };
+
+    User.findByIdAndUpdate(userId, { $set: userParams })
       .then(user => {
         res.locals.redirect = `/users/${userId}`;
         res.locals.user = user;
@@ -104,6 +118,8 @@ module.exports = {
         next(error);
       });
   },
+
+  // Delete user
   delete: (req, res, next) => {
     let userId = req.params.id;
     User.findByIdAndRemove(userId)
@@ -113,34 +129,36 @@ module.exports = {
       })
       .catch(error => {
         console.log(`Error deleting user by ID: ${error.message}`);
-        next();
+        next(error);
       });
   },
+
+  // Render login page
   login: (req, res) => {
     res.render("users/login");
   },
+
+  // Authenticate login
   authenticate: passport.authenticate("local", {
     failureRedirect: "/users/login",
     failureFlash: "Failed to login.",
     successRedirect: "/",
-    successFlash: "Logged in!"
+    successFlash: "Successfully logged in!"
   }),
+
+  // Validate input before registration
   validate: (req, res, next) => {
     req
       .sanitizeBody("email")
-      .normalizeEmail({
-        all_lowercase: true
-      })
+      .normalizeEmail({ all_lowercase: true })
       .trim();
+
     req.check("email", "Email is invalid").isEmail();
     req
       .check("zipCode", "Zip code is invalid")
       .notEmpty()
       .isInt()
-      .isLength({
-        min: 5,
-        max: 5
-      })
+      .isLength({ min: 4, max: 5 }) // minor flexibility
       .equals(req.body.zipCode);
     req.check("password", "Password cannot be empty").notEmpty();
 
@@ -156,10 +174,17 @@ module.exports = {
       }
     });
   },
+
+  // Logout user
   logout: (req, res, next) => {
-    req.logout();
-    req.flash("success", "You have been logged out!");
-    res.locals.redirect = "/";
-    next();
+    req.logout(err => {
+      if (err) {
+        console.error("Logout error:", err);
+        return next(err);
+      }
+      req.flash("success", "You have been logged out!");
+      res.locals.redirect = "/";
+      next();
+    });
   }
 };
