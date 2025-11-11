@@ -1,0 +1,33 @@
+{
+  "name": "clean_blog",
+  "version": "1.0.0",
+  "description": "A blog interface is a user-friendly, visually organized web layout that prioritizes readability and easy navigation to display regularly updated content. It typically features a clean design with a clear visual hierarchy, consistent branding, and mobile responsiveness.A blog interface is a user-friendly, visually organized web layout that prioritizes readability and easy navigation to display regularly updated content. It typically features a clean design with a clear visualhierarchy, consistent branding, and mobile responsiveness.",
+  "keywords": [
+    "keywords:",
+    "my-package",
+    "utility",
+    "library",
+    "nodejs"
+  ],
+  "homepage": "https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College#readme",
+  "bugs": {
+    "url": "https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College.git"
+  },
+  "license": "ISC",
+  "author": "Kabelo Xabendlini",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
