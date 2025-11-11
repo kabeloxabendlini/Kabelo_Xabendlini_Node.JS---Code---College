@@ -21,6 +21,10 @@ app.get('/contact', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'contact.html'));
 });
 
+app.get('/notFound', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'notFound.html'));
+});
+
 app.listen(3000, () => {
     console.log("App listening on port 3000");
 });
