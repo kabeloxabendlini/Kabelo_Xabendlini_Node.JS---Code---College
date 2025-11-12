@@ -1,0 +1,27 @@
+{
+  "name": "clean_blog",
+  "version": "1.0.0",
+  "description": "CHAPTER 4: TEMPLATING ENGINES  ",
+  "keywords": [
+    "\"my-package\""
+  ],
+  "homepage": "https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College#readme",
+  "bugs": {
+    "url": "https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kabeloxabendlini/Kabelo_Xabendlini_Node.JS---Code---College.git"
+  },
+  "license": "ISC",
+  "author": "Kabelo Xabendlini",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  }
+}
