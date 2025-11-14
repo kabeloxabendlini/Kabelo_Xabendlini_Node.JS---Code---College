@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const mongoose = require('mongoose');
 const BlogPost = require('./models/BlogPost');
-mongoose.connect('mongodb://localhost/my_database', { useUnifiedTopology: true, useNewUrlParser: true });
 
-const { error } = require('console');
+// Remove deprecated mongoose options
+mongoose.connect('mongodb://localhost/my_database');
 
 app.listen(4000, () => {
     console.log('App listening on port 4000');
@@ -44,19 +44,24 @@ app.get('/samplepost', (req, res) => {
     res.render('samplepost');
 });
 
-app.get('/posts/new',(req,res)=>{ 
-    res.render('create')
-   });
+app.get('/posts/new', (req, res) => {
+    res.render('create');
+});
 
 app.get('/post/:id', async (req, res) => {
-    const blogpost = await BlogPost.findById(req.params.id)
+    const blogpost = await BlogPost.findById(req.params.id);
     res.render('post', {
         blogpost: blogpost
     });
 });
 
+// FIXED — no callbacks in Mongoose v7+
 app.post('/posts/store', async (req, res) => {
-    await BlogPost.create(req.body, (error, blogpost) => {
+    try {
+        await BlogPost.create(req.body);
         res.redirect('/');
-    });
+    } catch (error) {
+        console.log(error);
+        res.redirect('/posts/new');
+    }
 });
