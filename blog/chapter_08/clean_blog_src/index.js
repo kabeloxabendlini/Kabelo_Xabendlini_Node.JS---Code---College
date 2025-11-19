@@ -11,12 +11,12 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// const customMiddleWare = (req,res,next)=>{
-//     console.log('Custom middle ware called')
-//     next()
-// };
+const customMiddleWare = (req,res,next)=>{
+    console.log('Custom middle ware called')
+    next()
+};
 
-// app.use(customMiddleWare);
+app.use(customMiddleWare);
 
 const validateMiddleWare = (req, res, next) => {
     if (req.files == null || req.body.title == null) {
