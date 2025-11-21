@@ -1,97 +1,99 @@
-const express = require('express');
-const path = require('path');
+// ---------------------- IMPORT MODULES ----------------------
+const express = require('express');                     
+const path = require('path');                           
+const mongoose = require('mongoose');                   
+const session = require('express-session');             
+const flash = require('connect-flash');                 
+const fileUpload = require('express-fileupload');       
+
+// Controllers
 const newPostController = require('./controllers/newPost');
+const storePostController = require('./controllers/storePost');
 const newUserController = require('./controllers/newUser');
 const storeUserController = require('./controllers/storeUser');
-const storePostController = require('./controllers/storePost');
 const loginController = require('./controllers/login');
 const loginUserController = require('./controllers/loginUser');
+const logoutController = require('./controllers/logout');
+
+// Middleware
 const authMiddleware = require('./middleware/authMiddleware');
 const redirectIfAuthenticatedMiddleware = require('./middleware/redirectIfAuthenticatedMiddleware');
-const logoutController = require('./controllers/logout');
-const flash = require('connect-flash');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const BlogPost = require('./models/BlogPost');
-const fileUpload = require('express-fileupload');
 
+// Models
+const BlogPost = require('./models/BlogPost');
+
+// ---------------------- APP SETUP ----------------------
 const app = express();
-const ejs = require('ejs');
 app.set('view engine', 'ejs');
 
+// Serve static files
 app.use(express.static('public'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost/my_blog', { useUnifiedTopology: true, useNewUrlParser: true });
+// Built-in body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const PORT = 4000;
+// Enable file uploads
+app.use(fileUpload());
 
-// Session middleware
+// ---------------------- DATABASE ----------------------
+mongoose.connect('mongodb://localhost/my_blog')
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+// ---------------------- SESSION & FLASH ----------------------
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: false
 }));
-
-// Flash middleware
 app.use(flash());
 
+// Track logged-in user globally for templates
 global.loggedIn = null;
-app.use("*", (req, res, next) => {
+app.use('*', (req, res, next) => {
     loggedIn = req.session.userId;
     next();
 });
 
-app.use(fileUpload());
+// ---------------------- PORT ----------------------
+const PORT = 4000;
+app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
 
-app.listen(PORT, () => {
-    console.log('App listening on port ' + PORT);
-});
+// ---------------------- ROUTES ----------------------
 
-// Routes
-
+// Home page — show all blog posts
 app.get('/', async (req, res) => {
     const blogposts = await BlogPost.find().populate('userid', 'username');
-    res.render('index', {
-        blogposts: blogposts
-    });
+    res.render('index', { blogposts });
 });
 
-app.get('/about', (req, res) => {
-    res.render('about');
-});
+// Static pages
+app.get('/about', (req, res) => res.render('about'));
+app.get('/contact', (req, res) => res.render('contact'));
+app.get('/samplepost', (req, res) => res.render('samplepost'));
 
-app.get('/contact', (req, res) => {
-    res.render('contact');
-});
-
-app.get('/samplepost', (req, res) => {
-    res.render('samplepost');
-});
-
+// Single blog post
 app.get('/post/:id', async (req, res) => {
-    const blogpost = await BlogPost.findById(req.params.id)
-    res.render('post', {
-        blogpost: blogpost
-    });
+    const blogpost = await BlogPost.findById(req.params.id);
+    res.render('post', { blogpost });
 });
 
-app.get('/posts/new', newPostController);
+// Create post page (protected)
+app.get('/posts/new', authMiddleware, newPostController);
+app.get('/create', authMiddleware, (req, res) => res.render('create'));
 
-app.get('/create', (req, res) => {
-    res.render('create');
-});
-
-app.post('/posts/store', async (req, res) => {
+// Store post (protected)
+app.post('/posts/store', authMiddleware, async (req, res) => {
     try {
-        let image = req.files.image;
+        const image = req.files.image;
         await image.mv(path.resolve(__dirname, 'public/img', image.name));
+
         await BlogPost.create({
             ...req.body,
             image: '/img/' + image.name
         });
+
         res.redirect('/');
     } catch (error) {
         console.error(error);
@@ -99,29 +101,18 @@ app.post('/posts/store', async (req, res) => {
     }
 });
 
-app.get('/auth/register', newUserController);
-app.post('/users/register', storeUserController);
+// ---------------------- AUTH ROUTES ----------------------
 
-app.post('/users/login', loginUserController);
-
-app.get('/auth/logout', logoutController);
-
-app.get('/posts/new', authMiddleware, newPostController);
-
-app.post('/posts/store', authMiddleware, storePostController);
-
+// Registration
 app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
 app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
-app.get('/auth/login', loginController);
+
+// Login
+app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
 app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
 
-// The below routes seem to be duplicated, so you can remove them.
-// app.get('/posts/new', authMiddleware, newPostController);
-// app.post('/posts/store', authMiddleware, storePostController);
-// app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
-// app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
-// app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
-// app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
-
+// Logout
 app.get('/auth/logout', logoutController);
+
+// ---------------------- 404 ----------------------
 app.use((req, res) => res.render('notfound'));
