@@ -10,27 +10,27 @@ const header = require("gulp-header");
 const merge = require("merge-stream");
 const plumber = require("gulp-plumber");
 const rename = require("gulp-rename");
-const sass = require("gulp-sass");
+const sass = require("gulp-sass")(require("sass")); // updated gulp-sass syntax
 const uglify = require("gulp-uglify");
+const log = require("fancy-log");
+const colors = require("ansi-colors");
 
 // Load package.json for banner
 const pkg = require('./package.json');
 
 // Set the banner content
-const banner = ['/*!\n',
+const banner = [
+  '/*!\n',
   ' * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
-  ' * Copyright 2013-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
+  ' * Copyright 2013-' + (new Date()).getFullYear() + ' <%= pkg.author %>\n',
   ' * Licensed under <%= pkg.license %> (https://github.com/StartBootstrap/<%= pkg.name %>/blob/master/LICENSE)\n',
-  ' */\n',
-  '\n'
+  ' */\n\n'
 ].join('');
 
 // BrowserSync
 function browserSync(done) {
   browsersync.init({
-    server: {
-      baseDir: "./"
-    },
+    server: { baseDir: "./" },
     port: 3000
   });
   done();
@@ -44,26 +44,29 @@ function browserSyncReload(done) {
 
 // Clean vendor
 function clean() {
+  log(colors.yellow('Cleaning vendor folder...'));
   return del(["./vendor/"]);
 }
 
 // Bring third party dependencies from node_modules into vendor directory
 function modules() {
-  // Bootstrap
-  var bootstrap = gulp.src('./node_modules/bootstrap/dist/**/*')
+  log(colors.blue('Copying vendor modules...'));
+  
+  const bootstrap = gulp.src('./node_modules/bootstrap/dist/**/*')
     .pipe(gulp.dest('./vendor/bootstrap'));
-  // Font Awesome CSS
-  var fontAwesomeCSS = gulp.src('./node_modules/@fortawesome/fontawesome-free/css/**/*')
+
+  const fontAwesomeCSS = gulp.src('./node_modules/@fortawesome/fontawesome-free/css/**/*')
     .pipe(gulp.dest('./vendor/fontawesome-free/css'));
-  // Font Awesome Webfonts
-  var fontAwesomeWebfonts = gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/**/*')
+
+  const fontAwesomeWebfonts = gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/**/*')
     .pipe(gulp.dest('./vendor/fontawesome-free/webfonts'));
-  // jQuery
-  var jquery = gulp.src([
+
+  const jquery = gulp.src([
       './node_modules/jquery/dist/*',
       '!./node_modules/jquery/dist/core.js'
     ])
     .pipe(gulp.dest('./vendor/jquery'));
+
   return merge(bootstrap, fontAwesomeCSS, fontAwesomeWebfonts, jquery);
 }
 
@@ -72,21 +75,11 @@ function css() {
   return gulp
     .src("./scss/**/*.scss")
     .pipe(plumber())
-    .pipe(sass({
-      outputStyle: "expanded",
-      includePaths: "./node_modules",
-    }))
-    .on("error", sass.logError)
-    .pipe(autoprefixer({
-      cascade: false
-    }))
-    .pipe(header(banner, {
-      pkg: pkg
-    }))
+    .pipe(sass({ outputStyle: "expanded", includePaths: "./node_modules" }).on("error", sass.logError))
+    .pipe(autoprefixer({ cascade: false }))
+    .pipe(header(banner, { pkg: pkg }))
     .pipe(gulp.dest("./css"))
-    .pipe(rename({
-      suffix: ".min"
-    }))
+    .pipe(rename({ suffix: ".min" }))
     .pipe(cleanCSS())
     .pipe(gulp.dest("./css"))
     .pipe(browsersync.stream());
@@ -102,12 +95,8 @@ function js() {
       '!./js/jqBootstrapValidation.js'
     ])
     .pipe(uglify())
-    .pipe(header(banner, {
-      pkg: pkg
-    }))
-    .pipe(rename({
-      suffix: '.min'
-    }))
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('./js'))
     .pipe(browsersync.stream());
 }
