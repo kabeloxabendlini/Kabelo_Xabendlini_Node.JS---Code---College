@@ -1,14 +1,25 @@
-const User = require('../models/User.js')
-const path = require('path')
+const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
-module.exports = (req,res) =>{
-    User.create(req.body, (error, user) =>{
-        if(error){
-          const validationErrors = Object.keys(error.errors).map(key => error.errors[key].message)          
-          req.flash('validationErrors',validationErrors)
-          req.flash('data',req.body)
-          return res.redirect('/auth/register')    
-        }        
-        res.redirect('/')
-    })
-}
+module.exports = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create the user using await (no callback)
+        const user = await User.create({
+            username,
+            password: hashedPassword
+        });
+
+        // Optionally store user session
+        req.session.userId = user._id;
+
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/register'); // or show an error page
+    }
+};
