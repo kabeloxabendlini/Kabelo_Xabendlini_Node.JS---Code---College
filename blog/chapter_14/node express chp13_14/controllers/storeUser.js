@@ -3,23 +3,42 @@ const bcrypt = require('bcrypt');
 
 module.exports = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, email, password } = req.body;
 
-        // Hash the password
+        // 1. Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create the user using await (no callback)
-        const user = await User.create({
+        // 2. Create the user
+        await User.create({
             username,
+            email,
             password: hashedPassword
         });
 
-        // Optionally store user session
-        req.session.userId = user._id;
+        // 3. Registration successful → redirect to login
+        return res.redirect('/auth/login');
 
-        res.redirect('/');
-    } catch (err) {
-        console.error(err);
-        res.redirect('/register'); // or show an error page
+    } catch (error) {
+        console.error(error);
+
+        let validationErrors = [];
+
+        // Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            validationErrors = Object.keys(error.errors).map(
+                key => error.errors[key].message
+            );
+        }
+
+        // Duplicate key (username/email already exists)
+        if (error.code === 11000) {
+            validationErrors.push('Username or Email already exists.');
+        }
+
+        // Preserve submitted data in flash
+        req.flash('validationErrors', validationErrors);
+        req.flash('data', req.body);
+
+        return res.redirect('/auth/register');
     }
 };

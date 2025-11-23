@@ -18,6 +18,7 @@ const logoutController = require('./controllers/logout');
 // Middleware
 const authMiddleware = require('./middleware/authMiddleware');
 const redirectIfAuthenticatedMiddleware = require('./middleware/redirectIfAuthenticatedMiddleware');
+const validationMiddleware = require('./middleware/validationMiddleware');
 
 // Models
 const BlogPost = require('./models/BlogPost');
